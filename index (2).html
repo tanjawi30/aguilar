@@ -1,0 +1,2086 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devis</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080808;
+    --surface: #0e0e0e;
+    --surface2: #141414;
+    --surface3: #1a1a1a;
+    --border: #222;
+    --border2: #2a2a2a;
+    --gold: #c9a84c;
+    --gold2: #e8c96e;
+    --gold-soft: rgba(201,168,76,0.08);
+    --gold-border: rgba(201,168,76,0.2);
+    --text: #f0ede8;
+    --muted: #6b6560;
+    --muted2: #3a3530;
+    --red: #c0392b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 14px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+  }
+
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-border); }
+
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: flex; flex-direction: column; }
+
+  /* ══════════════════════════
+     DEVIS PAGE — LUXURY DARK
+  ══════════════════════════ */
+
+  /* Noise texture overlay */
+  #page-devis::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; opacity: 0.5;
+  }
+
+  /* Top bar */
+  .devis-topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(8,8,8,0.92);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    padding: 0 48px;
+    height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .devis-topbar-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.7;
+  }
+
+  .devis-topbar-right {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+  }
+
+  .devis-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 32px 80px;
+    width: 100%;
+    flex: 1;
+    position: relative; z-index: 1;
+  }
+
+  /* Hero header */
+  .devis-header {
+    margin-bottom: 56px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 40px;
+    position: relative;
+  }
+
+  .devis-header::before {
+    content: '';
+    position: absolute; bottom: -1px; left: 0;
+    width: 60px; height: 1px;
+    background: var(--gold);
+  }
+
+  .devis-header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.8;
+  }
+
+  .devis-header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px;
+    font-weight: 300;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .devis-header h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .devis-header p {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* Form blocks */
+  .form-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 32px;
+    margin-bottom: 2px;
+    position: relative;
+    transition: border-color 0.3s;
+  }
+
+  .form-block:first-of-type { border-radius: 4px 4px 0 0; }
+  .form-block:last-of-type { border-radius: 0 0 4px 4px; margin-bottom: 20px; }
+  .form-block:hover { border-color: var(--border2); }
+
+  .form-block::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 2px; height: 0;
+    background: var(--gold);
+    transition: height 0.4s ease;
+  }
+  .form-block:hover::before { height: 100%; }
+
+  .form-block-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.6;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .form-block-title::before {
+    content: '';
+    width: 4px; height: 4px;
+    background: var(--gold);
+    display: inline-block;
+    opacity: 0.6;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .form-row.one { grid-template-columns: 1fr; }
+  .form-row.three { grid-template-columns: 2fr 1fr 1fr; }
+  .form-row:last-child { margin-bottom: 0; }
+
+  .form-group { display: flex; flex-direction: column; gap: 7px; }
+
+  label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  input, textarea, select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    width: 100%;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: rgba(201,168,76,0.4);
+    background: var(--surface3);
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--muted2);
+    font-weight: 300;
+  }
+
+  select option { background: var(--surface2); }
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* Items table */
+  .items-header {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr 36px;
+    gap: 10px;
+    padding: 0 2px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .items-header span {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .item-row {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr 36px;
+    gap: 10px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+
+  .item-total {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--gold2);
+    padding: 11px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    text-align: right;
+  }
+
+  .btn-remove {
+    width: 32px; height: 32px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--muted2);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .btn-remove:hover { border-color: var(--red); color: var(--red); }
+
+  .btn-add-item {
+    background: none;
+    border: 1px dashed var(--border2);
+    border-radius: 2px;
+    padding: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.1em;
+    width: 100%;
+    margin-top: 10px;
+    transition: all 0.2s;
+  }
+  .btn-add-item:hover { border-color: var(--gold-border); color: var(--gold); }
+
+  /* Totaux */
+  .totaux {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 0;
+    margin-bottom: 2px;
+    overflow: hidden;
+  }
+
+  .totaux-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+    transition: background 0.2s;
+  }
+  .totaux-row:last-child { border-bottom: none; }
+  .totaux-row:hover { background: var(--surface2); }
+
+  .totaux-row.total {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    padding: 20px 28px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border2);
+  }
+  .totaux-row.total:hover { background: var(--surface3); }
+
+  .totaux-row span:last-child {
+    font-family: 'DM Mono', monospace;
+    color: var(--text);
+  }
+  .totaux-row.total span:last-child {
+    color: var(--gold2);
+    font-size: 18px;
+    letter-spacing: 0.05em;
+  }
+
+  /* Buttons */
+  .actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 32px;
+  }
+
+  .btn {
+    padding: 12px 24px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid;
+    transition: all 0.25s;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+    border-radius: 2px;
+  }
+
+  .btn-ghost {
+    background: none;
+    border-color: var(--border2);
+    color: var(--muted);
+  }
+  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+
+  .btn-primary {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #080808;
+    font-weight: 600;
+  }
+  .btn-primary:hover {
+    background: var(--gold2);
+    border-color: var(--gold2);
+    box-shadow: 0 0 24px rgba(201,168,76,0.25);
+  }
+
+  /* ══════════════════════════
+     PREVIEW MODAL
+  ══════════════════════════ */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 100;
+    align-items: center; justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: white;
+    color: #111;
+    border-radius: 2px;
+    padding: 52px;
+    max-width: 720px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+  }
+
+  .modal-close {
+    position: absolute; top: 18px; right: 18px;
+    background: #f5f5f5; border: none; border-radius: 2px;
+    width: 32px; height: 32px;
+    cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    color: #666; transition: background 0.2s;
+  }
+  .modal-close:hover { background: #eee; }
+
+  .preview-header { margin-bottom: 40px; padding-bottom: 24px; border-bottom: 2px solid #111; }
+  .preview-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 600; color: #111; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .preview-num { font-family: 'DM Mono', monospace; font-size: 11px; color: #999; letter-spacing: 0.1em; }
+
+  .preview-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 36px; }
+  .preview-party h4 { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #bbb; margin-bottom: 10px; }
+  .preview-party p { font-size: 13px; color: #333; line-height: 1.7; font-weight: 300; }
+  .preview-party strong { color: #111; font-weight: 600; }
+
+  .preview-table { width: 100%; border-collapse: collapse; margin-bottom: 28px; }
+  .preview-table th { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: #aaa; padding: 10px 12px; border-bottom: 2px solid #111; text-align: left; }
+  .preview-table td { font-size: 13px; padding: 12px 12px; border-bottom: 1px solid #f0f0f0; color: #333; font-weight: 300; }
+  .preview-table tr:last-child td { border-bottom: none; }
+  .preview-table td:last-child { text-align: right; font-family: 'DM Mono', monospace; font-weight: 400; }
+
+  .preview-totaux { margin-left: auto; width: 280px; }
+  .preview-totaux-row { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; color: #777; border-bottom: 1px solid #f0f0f0; font-weight: 300; }
+  .preview-totaux-row:last-child { border-bottom: none; border-top: 2px solid #111; padding-top: 14px; margin-top: 6px; font-weight: 700; font-size: 17px; color: #111; }
+  .preview-totaux-row span:last-child { font-family: 'DM Mono', monospace; }
+
+  .preview-notes { margin-top: 36px; padding-top: 24px; border-top: 1px solid #eee; font-size: 12px; color: #999; line-height: 1.8; font-weight: 300; }
+  .preview-actions { display: flex; gap: 10px; margin-top: 28px; padding-top: 24px; border-top: 1px solid #eee; }
+
+  .btn-dark { background: #111; color: white; padding: 11px 22px; border: none; border-radius: 2px; font-size: 12px; font-family: 'DM Mono', monospace; font-weight: 500; letter-spacing: 0.1em; cursor: pointer; transition: background 0.2s; }
+  .btn-dark:hover { background: #333; }
+  .btn-light { background: #f5f5f5; color: #333; padding: 11px 22px; border: none; border-radius: 2px; font-size: 12px; font-family: 'DM Mono', monospace; font-weight: 500; letter-spacing: 0.1em; cursor: pointer; }
+  .btn-light:hover { background: #eee; }
+
+  .db-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    gap: 12px;
+  }
+
+  .db-search {
+    position: relative;
+    flex: 1;
+    max-width: 340px;
+  }
+
+  .db-search input {
+    padding-left: 36px;
+    background: var(--surface);
+  }
+
+  .db-search svg {
+    position: absolute;
+    left: 11px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+  }
+
+  .btn-new {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-new:hover { background: var(--accent-hover); }
+
+  /* Stats */
+  .db-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .db-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+
+  .db-stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  .db-stat-val { font-size: 28px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--text); }
+  .db-stat-val.accent { color: var(--accent-hover); }
+
+  /* Cards grid */
+  .db-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+  }
+
+  .db-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: pointer;
+  }
+
+  .db-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+  .db-card-top {
+    padding: 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .db-avatar {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .db-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  .db-card-info { flex: 1; min-width: 0; }
+
+  .db-card-name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .db-card-sub { font-size: 12px; color: var(--muted); }
+
+  .db-card-tags {
+    padding: 12px 20px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-height: 44px;
+  }
+
+  .tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 100px;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    background: var(--bg);
+  }
+
+  .db-card-actions {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-sm {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+    border: 1px solid var(--border2);
+    background: none;
+    color: var(--muted);
+  }
+
+  .btn-sm:hover { color: var(--text); border-color: var(--text); }
+  .btn-sm.danger:hover { color: var(--red); border-color: var(--red); }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+  }
+
+  .empty-state svg { margin: 0 auto 16px; display: block; opacity: 0.3; }
+  .empty-state p { font-size: 14px; margin-bottom: 6px; }
+  .empty-state span { font-size: 12px; color: var(--muted2); }
+
+  /* ── FICHE MODAL ── */
+  .fiche-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .fiche-overlay.active { display: flex; }
+
+  .fiche-modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .fiche-modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 24px; color: var(--text); }
+
+  .fiche-avatar-upload {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 16px;
+    border: 1px dashed var(--border2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .fiche-avatar-upload:hover { border-color: var(--accent); }
+
+  .fiche-avatar-preview {
+    width: 56px; height: 56px;
+    border-radius: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .fiche-avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+  .fiche-avatar-text p { font-size: 13px; font-weight: 500; color: var(--text); }
+  .fiche-avatar-text span { font-size: 11px; color: var(--muted); }
+
+  #avatarFileInput { display: none; }
+
+  .fiche-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .fiche-row.one { grid-template-columns: 1fr; }
+
+  .fiche-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px; }
+
+  /* View fiche */
+  .view-fiche-modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .view-fiche-header {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .view-avatar {
+    width: 68px; height: 68px;
+    border-radius: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .view-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  .view-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .view-meta { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  .view-section { margin-bottom: 20px; }
+  .view-section-title { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+  .view-field { display: flex; gap: 12px; margin-bottom: 8px; font-size: 13px; }
+  .view-field-key { color: var(--muted); min-width: 110px; flex-shrink: 0; }
+  .view-field-val { color: var(--text); }
+
+  .view-notes {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    min-height: 60px;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 13px;
+    color: var(--text);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    pointer-events: none;
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: var(--green); }
+  .toast.success::before { content: '✓'; color: var(--green); font-weight: 700; }
+
+
+  /* ════════════════════════
+     DATABASE — CLASSIFIED STYLE
+  ════════════════════════ */
+  #page-db {
+    background: #050f05;
+    font-family: 'DM Mono', monospace;
+    color: #00ff41;
+  }
+
+  .db-nav {
+    background: rgba(0,10,0,0.95);
+    border-bottom: 1px solid #00ff41;
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 0 20px rgba(0,255,65,0.1);
+  }
+
+  .db-nav-left { display: flex; align-items: center; gap: 16px; }
+
+  .db-logo {
+    width: 28px; height: 28px;
+    border: 1px solid #00ff41;
+    display: flex; align-items: center; justify-content: center;
+    animation: borderPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes borderPulse {
+    0%,100% { box-shadow: 0 0 4px rgba(0,255,65,0.3); }
+    50% { box-shadow: 0 0 12px rgba(0,255,65,0.7), inset 0 0 6px rgba(0,255,65,0.1); }
+  }
+
+  .db-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #00ff41;
+    letter-spacing: 0.15em;
+    text-shadow: 0 0 8px rgba(0,255,65,0.5);
+  }
+
+  .db-badge {
+    font-size: 10px;
+    color: #00ff41;
+    letter-spacing: 0.2em;
+    animation: blink 1.5s step-end infinite;
+    padding: 3px 10px;
+    border: 1px solid rgba(0,255,65,0.3);
+  }
+
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+  .btn-exit {
+    background: none;
+    border: 1px solid rgba(255,50,50,0.5);
+    color: #ff4444;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    padding: 6px 14px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+  }
+  .btn-exit:hover { background: rgba(255,50,50,0.1); border-color: #ff4444; box-shadow: 0 0 8px rgba(255,50,50,0.3); }
+
+  .db-wrap { max-width: 1100px; margin: 0 auto; padding: 32px; position: relative; z-index: 2; }
+
+  /* Classified Header */
+  .classified-header {
+    background: rgba(0,20,0,0.8);
+    border: 1px solid rgba(0,255,65,0.3);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .classified-header::before {
+    content: 'DOSSIER PERSONNEL — ACCÈS CLASSIFIÉ';
+    position: absolute; top: 8px; right: 16px;
+    font-size: 10px; color: rgba(0,255,65,0.3);
+    letter-spacing: 0.2em;
+  }
+
+  .ch-line { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; }
+  .ch-line:last-child { margin-bottom: 0; }
+  .ch-key { color: rgba(0,255,65,0.6); min-width: 80px; }
+  .ch-sep { color: rgba(0,255,65,0.4); }
+  .ch-val { color: #00ff41; }
+  .blink-green { animation: blink 2s step-end infinite; }
+
+  /* DB Toolbar */
+  .db-toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .db-search {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0,20,0,0.8);
+    border: 1px solid rgba(0,255,65,0.3);
+    padding: 0 14px;
+  }
+
+  .db-search input {
+    background: none;
+    border: none;
+    color: #00ff41;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    flex: 1;
+    padding: 10px 0;
+    outline: none;
+    letter-spacing: 0.05em;
+  }
+  .db-search input::placeholder { color: rgba(0,255,65,0.3); }
+
+  .btn-new {
+    background: none;
+    border: 1px solid #00ff41;
+    color: #00ff41;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 10px 20px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-new:hover {
+    background: rgba(0,255,65,0.1);
+    box-shadow: 0 0 12px rgba(0,255,65,0.3);
+  }
+
+  /* DB Grid */
+  .db-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
+  }
+
+  /* DB Card — Classified style */
+  .db-card {
+    background: rgba(0,15,0,0.9);
+    border: 1px solid rgba(0,255,65,0.25);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .db-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00ff41, transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .db-card:hover { border-color: #00ff41; box-shadow: 0 0 16px rgba(0,255,65,0.15); }
+  .db-card:hover::before { opacity: 1; }
+
+  .db-card-top {
+    display: flex;
+    gap: 14px;
+    padding: 16px;
+    border-bottom: 1px solid rgba(0,255,65,0.15);
+  }
+
+  .db-avatar {
+    width: 56px; height: 56px;
+    border: 1px solid rgba(0,255,65,0.4);
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+    background: #010f01;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .db-avatar::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,0.04) 3px,rgba(0,255,65,0.04) 4px);
+    pointer-events: none;
+  }
+  .db-avatar img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.3) brightness(0.9); }
+  .db-avatar-initials {
+    font-size: 16px;
+    font-weight: 700;
+    color: rgba(0,255,65,0.5);
+    letter-spacing: 0.1em;
+  }
+
+  .db-card-info { flex: 1; min-width: 0; }
+  .db-card-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #00ff41;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .db-card-sub { font-size: 11px; color: rgba(0,255,65,0.5); }
+  .db-card-id { font-size: 10px; color: rgba(0,255,65,0.3); margin-top: 6px; letter-spacing: 0.1em; }
+
+  .db-card-tags {
+    padding: 10px 16px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid rgba(0,255,65,0.1);
+    min-height: 38px;
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border: 1px solid rgba(0,255,65,0.25);
+    color: rgba(0,255,65,0.6);
+    letter-spacing: 0.05em;
+    background: rgba(0,255,65,0.04);
+  }
+
+  .db-card-status {
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: rgba(0,255,65,0.4);
+    letter-spacing: 0.08em;
+  }
+  .db-card-status .status-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: #00ff41;
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: blink 2s step-end infinite;
+  }
+
+  .empty-state {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 80px 20px;
+    color: rgba(0,255,65,0.3);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+  }
+  .empty-state svg { margin: 0 auto 16px; display: block; opacity: 0.2; stroke: #00ff41; }
+
+  /* ════ CLASSIFIED MODAL ════ */
+  .fiche-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,5,0,0.92);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .fiche-overlay.active { display: flex; }
+
+  .classified-modal {
+    background: #020d02;
+    border: 1px solid rgba(0,255,65,0.4);
+    box-shadow: 0 0 40px rgba(0,255,65,0.1), inset 0 0 60px rgba(0,20,0,0.5);
+    max-width: 680px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .classified-modal::-webkit-scrollbar { width: 3px; }
+  .classified-modal::-webkit-scrollbar-thumb { background: rgba(0,255,65,0.3); }
+
+  .cm-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(0,255,65,0.25);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,20,0,0.5);
+  }
+  .cm-header span:first-child { font-size: 13px; font-weight: 700; color: #00ff41; letter-spacing: 0.15em; }
+  .cm-id { font-size: 10px; color: rgba(0,255,65,0.4); }
+
+  .cm-close {
+    position: absolute; top: 14px; right: 16px;
+    background: none; border: 1px solid rgba(255,50,50,0.4);
+    color: #ff4444; font-size: 14px; cursor: pointer;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    font-family: monospace;
+  }
+  .cm-close:hover { background: rgba(255,50,50,0.1); }
+
+  /* Photo zone */
+  .photo-zone {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(0,255,65,0.15);
+    cursor: pointer;
+  }
+
+  .photo-preview {
+    width: 100%;
+    height: 160px;
+    border: 1px dashed rgba(0,255,65,0.3);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,10,0,0.6);
+    transition: border-color 0.2s;
+  }
+  .photo-preview:hover { border-color: #00ff41; }
+  .photo-preview.has-image { height: 200px; }
+  .photo-preview img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    filter: saturate(0.5) brightness(0.85);
+  }
+  .photo-preview::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,0.03) 3px,rgba(0,255,65,0.03) 4px);
+    pointer-events: none;
+  }
+
+  .photo-placeholder {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+    color: rgba(0,255,65,0.4);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-align: center;
+  }
+
+  .photo-paste-hint {
+    position: absolute; bottom: 8px; right: 8px;
+    font-size: 10px; color: rgba(0,255,65,0.35);
+    letter-spacing: 0.08em;
+    background: rgba(0,5,0,0.8);
+    padding: 2px 8px;
+    border: 1px solid rgba(0,255,65,0.15);
+  }
+
+  .photo-zone-label {
+    margin-top: 8px;
+    font-size: 10px;
+    color: rgba(0,255,65,0.3);
+    letter-spacing: 0.15em;
+    text-align: center;
+  }
+
+  /* CM Fields */
+  .cm-fields { padding: 20px 24px; }
+  .cm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .cm-field { display: flex; flex-direction: column; gap: 5px; }
+  .cm-label { font-size: 10px; color: rgba(0,255,65,0.5); letter-spacing: 0.15em; }
+  .cm-input {
+    background: rgba(0,15,0,0.8);
+    border: 1px solid rgba(0,255,65,0.2);
+    color: #00ff41;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    letter-spacing: 0.05em;
+  }
+  .cm-input:focus { border-color: #00ff41; box-shadow: 0 0 8px rgba(0,255,65,0.15); }
+  .cm-input::placeholder { color: rgba(0,255,65,0.2); }
+
+  .cm-actions {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(0,255,65,0.2);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    background: rgba(0,10,0,0.4);
+  }
+  .cm-btn-cancel, .cm-btn-save, .cm-btn-danger {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 8px 16px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    border: 1px solid;
+    transition: all 0.2s;
+    background: none;
+  }
+  .cm-btn-cancel { border-color: rgba(0,255,65,0.2); color: rgba(0,255,65,0.5); }
+  .cm-btn-cancel:hover { border-color: rgba(0,255,65,0.4); color: #00ff41; }
+  .cm-btn-save { border-color: #00ff41; color: #00ff41; }
+  .cm-btn-save:hover { background: rgba(0,255,65,0.1); box-shadow: 0 0 10px rgba(0,255,65,0.2); }
+  .cm-btn-danger { border-color: rgba(255,50,50,0.4); color: #ff4444; }
+  .cm-btn-danger:hover { background: rgba(255,50,50,0.08); border-color: #ff4444; }
+
+  /* View fiche content */
+  .view-modal { max-width: 760px; }
+  .vf-grid { display: grid; grid-template-columns: 200px 1fr; gap: 0; border: 1px solid rgba(0,255,65,0.2); margin: 16px 24px; }
+  .vf-photo {
+    border-right: 1px solid rgba(0,255,65,0.2);
+    background: #010f01;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+    min-height: 200px;
+  }
+  .vf-photo img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.4) brightness(0.85); }
+  .vf-photo::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,0.04) 3px,rgba(0,255,65,0.04) 4px); pointer-events: none; }
+  .vf-photo-empty { color: rgba(0,255,65,0.2); font-size: 10px; letter-spacing: 0.1em; text-align: center; }
+  .vf-data { padding: 16px; }
+  .vf-row { display: flex; gap: 10px; margin-bottom: 10px; font-size: 12px; border-bottom: 1px solid rgba(0,255,65,0.08); padding-bottom: 8px; }
+  .vf-row:last-child { border-bottom: none; margin-bottom: 0; }
+  .vf-key { color: rgba(0,255,65,0.4); min-width: 80px; flex-shrink: 0; font-size: 10px; letter-spacing: 0.1em; padding-top: 1px; }
+  .vf-val { color: #00ff41; line-height: 1.5; }
+  .vf-header { padding: 16px 24px 0; }
+  .vf-name { font-size: 20px; font-weight: 700; letter-spacing: 0.2em; color: #00ff41; text-transform: uppercase; margin-bottom: 4px; }
+  .vf-system { font-size: 10px; color: rgba(0,255,65,0.4); letter-spacing: 0.15em; }
+  .vf-notes-block { margin: 0 24px 0; padding: 12px; border: 1px solid rgba(0,255,65,0.15); background: rgba(0,10,0,0.5); font-size: 12px; color: rgba(0,255,65,0.7); line-height: 1.7; white-space: pre-wrap; }
+  .vf-notes-label { font-size: 10px; color: rgba(0,255,65,0.4); letter-spacing: 0.15em; padding: 12px 24px 4px; }
+
+
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: #010f01;
+    border: 1px solid #00ff41;
+    border-radius: 2px;
+    padding: 12px 18px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: #00ff41;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    pointer-events: none;
+    letter-spacing: 0.1em;
+    box-shadow: 0 0 16px rgba(0,255,65,0.2);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.error { border-color: #ff4444; color: #ff4444; box-shadow: 0 0 16px rgba(255,50,50,0.2); }
+
+  @media print {
+    body > *:not(.modal-overlay) { display: none; }
+    .modal-overlay { display: flex !important; position: static; background: white; padding: 0; }
+    .modal { box-shadow: none; max-height: none; overflow: visible; }
+    .modal-close, .preview-actions { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .form-row, .form-row.three { grid-template-columns: 1fr; }
+    .items-header, .item-row { grid-template-columns: 2fr 1fr 1fr; }
+    .items-header span:nth-child(4), .items-header span:nth-child(5),
+    .item-row > *:nth-child(4), .item-row > *:nth-child(5) { display: none; }
+    .db-stats { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════ TOAST ════ -->
+<div class="toast" id="toast"></div>
+
+<!-- ════════════════════════════
+     PAGE : DEVIS
+════════════════════════════ -->
+<div class="page active" id="page-devis">
+  <!-- TOP BAR -->
+  <div class="devis-topbar">
+    <div class="devis-topbar-brand">Devis & Facturation</div>
+    <div class="devis-topbar-right" id="devis-date-display"></div>
+  </div>
+
+  <div class="devis-wrap">
+    <div class="devis-header">
+      <div class="devis-header-eyebrow">Nouveau document</div>
+      <h1>Créer un <em>devis</em></h1>
+      <p>Renseignez les informations ci-dessous pour générer votre document</p>
+    </div>
+
+    <!-- Infos client -->
+    <div class="form-block">
+      <div class="form-block-title">Informations client</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nom du client *</label>
+          <input type="text" id="clientNom" placeholder="Dupont">
+        </div>
+        <div class="form-group">
+          <label>Prénom</label>
+          <input type="text" id="clientPrenom" placeholder="Jean">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Entreprise</label>
+          <input type="text" id="clientEntreprise" placeholder="SARL Example">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="clientEmail" placeholder="jean@example.com">
+        </div>
+      </div>
+      <div class="form-row one">
+        <div class="form-group">
+          <label>Adresse</label>
+          <input type="text" id="clientAdresse" placeholder="12 rue de la Paix, 75001 Paris">
+        </div>
+      </div>
+    </div>
+
+    <!-- Infos devis -->
+    <div class="form-block">
+      <div class="form-block-title">Informations du devis</div>
+      <div class="form-row three">
+        <div class="form-group">
+          <label>Objet du devis *</label>
+          <input type="text" id="devisObjet" placeholder="Prestation de services...">
+        </div>
+        <div class="form-group">
+          <label>Numéro</label>
+          <input type="text" id="devisNum" placeholder="DEV-2024-001">
+        </div>
+        <div class="form-group">
+          <label>Date de validité</label>
+          <input type="date" id="devisDate">
+        </div>
+      </div>
+    </div>
+
+    <!-- Prestations -->
+    <div class="form-block">
+      <div class="form-block-title">Prestations / Articles</div>
+      <div class="items-header">
+        <span>Description</span>
+        <span>Qté</span>
+        <span>Prix HT</span>
+        <span>Total HT</span>
+        <span></span>
+      </div>
+      <div id="itemsContainer"></div>
+      <button class="btn-add-item" onclick="addItem()">+ Ajouter une ligne</button>
+    </div>
+
+    <!-- TVA & remise -->
+    <div class="form-block">
+      <div class="form-block-title">Options</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>TVA (%)</label>
+          <input type="number" id="tva" value="20" min="0" max="100" oninput="calcTotaux()">
+        </div>
+        <div class="form-group">
+          <label>Remise (%)</label>
+          <input type="number" id="remise" value="0" min="0" max="100" oninput="calcTotaux()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Totaux -->
+    <div class="totaux">
+      <div class="totaux-row">
+        <span>Sous-total HT</span>
+        <span id="t-ht">0,00 €</span>
+      </div>
+      <div class="totaux-row" id="row-remise" style="display:none">
+        <span>Remise</span>
+        <span id="t-remise">0,00 €</span>
+      </div>
+      <div class="totaux-row">
+        <span>TVA</span>
+        <span id="t-tva">0,00 €</span>
+      </div>
+      <div class="totaux-row total">
+        <span>Total TTC</span>
+        <span id="t-ttc">0,00 €</span>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="form-block">
+      <div class="form-block-title">Notes / Conditions</div>
+      <div class="form-group">
+        <textarea id="devisNotes" placeholder="Conditions de paiement, délais, remarques..."></textarea>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="resetDevis()">Réinitialiser</button>
+      <button class="btn btn-primary" onclick="openPreview()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Prévisualiser
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     PREVIEW MODAL
+════════════════════════════ -->
+<div class="modal-overlay" id="previewOverlay">
+  <div class="modal" id="previewModal">
+    <button class="modal-close" onclick="closePreview()">✕</button>
+    <div id="previewContent"></div>
+    <div class="preview-actions">
+      <button class="btn-light" onclick="closePreview()">← Modifier</button>
+      <button class="btn-dark" onclick="window.print()">🖨 Imprimer / PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     PAGE : DATABASE
+════════════════════════════ -->
+
+<!-- ════ PAGE DB ════ -->
+<!-- PAGE DB -->
+<div class="page" id="page-db">
+
+  <!-- ── NAV ── -->
+  <div class="db-nav">
+    <div class="db-nav-left">
+      <div class="db-logo">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff41" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      </div>
+      <span class="db-title">SYSTÈME — ACCÈS CLASSIFIÉ</span>
+      <span class="db-badge">⬤ CONNECTÉ</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="db-clock" style="font-family:'DM Mono',monospace;font-size:11px;color:#00ff41;opacity:0.7;letter-spacing:0.1em;"></span>
+      <button class="btn-exit" onclick="exitDB()">[ DÉCONNEXION ]</button>
+    </div>
+  </div>
+
+  <!-- ── SCANLINE OVERLAY ── -->
+  <div style="position:fixed;inset:0;pointer-events:none;z-index:1;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,0.015) 2px,rgba(0,255,65,0.015) 4px);"></div>
+
+  <!-- ── CONTENT ── -->
+  <div class="db-wrap">
+
+    <!-- HEADER STATS -->
+    <div class="classified-header reveal">
+      <div class="ch-line">
+        <span class="ch-key">SYSTEM_ID</span><span class="ch-sep">]</span>
+        <span class="ch-val">AGUILAR-DATABASE-v2.4</span>
+      </div>
+      <div class="ch-line">
+        <span class="ch-key">STATUT&nbsp;&nbsp;</span><span class="ch-sep">]</span>
+        <span class="ch-val blink-green">ACTIF</span>
+      </div>
+      <div class="ch-line">
+        <span class="ch-key">FICHES&nbsp;&nbsp;</span><span class="ch-sep">]</span>
+        <span class="ch-val"><span id="stat-total">0</span> DOSSIER(S) ENREGISTRÉ(S)</span>
+      </div>
+      <div class="ch-line">
+        <span class="ch-key">ACCÈS&nbsp;&nbsp;&nbsp;</span><span class="ch-sep">]</span>
+        <span class="ch-val">
+          <span style="color:#00ff41;">█████████</span><span style="color:#1a3a1a;">█</span>
+          (TOP SECRET)
+        </span>
+      </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="db-toolbar reveal">
+      <div class="db-search">
+        <span style="color:#00ff41;font-family:'DM Mono',monospace;font-size:12px;">SEARCH &gt;</span>
+        <input type="text" placeholder="Rechercher un dossier..." id="dbSearch" oninput="filterCards()">
+      </div>
+      <button class="btn-new" onclick="openNewFiche()">
+        [ + NOUVEAU DOSSIER ]
+      </button>
+    </div>
+
+    <!-- GRID -->
+    <div class="db-grid" id="dbGrid"></div>
+
+  </div>
+</div>
+
+
+<!-- ════ CRYPTO LOADER ════ -->
+<div id="cryptoLoader" style="display:none;position:fixed;inset:0;background:#0a0a0f;z-index:5000;flex-direction:column;align-items:center;justify-content:center;font-family:'DM Mono',monospace;">
+  <div id="cl-glitch" style="font-size:clamp(22px,3vw,32px);font-weight:700;color:#6366f1;letter-spacing:4px;margin-bottom:40px;position:relative;text-align:center;padding:0 20px;"></div>
+  <div style="width:min(480px,90vw);position:relative;">
+    <div style="background:#111;border:1px solid #1e1e2e;border-radius:4px;overflow:hidden;height:3px;margin-bottom:24px;">
+      <div id="cl-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#4f46e5,#818cf8);transition:width 0.1s linear;box-shadow:0 0 12px rgba(99,102,241,0.6);"></div>
+    </div>
+    <div id="cl-lines" style="font-size:11px;color:#3d3d5c;line-height:2;height:160px;overflow:hidden;position:relative;">
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(transparent,#0a0a0f);pointer-events:none;"></div>
+  </div>
+  <div id="cl-status" style="font-size:11px;color:#4f46e5;letter-spacing:0.2em;text-transform:uppercase;margin-top:20px;opacity:0.7;"></div>
+</div>
+
+<!-- ════ FICHE MODAL (ajout/modif) ════ -->
+
+
+<!-- ════ FICHE MODAL (ajout/modif) ════ -->
+<div class="fiche-overlay" id="ficheOverlay">
+  <div class="fiche-modal classified-modal">
+    <div class="cm-header">
+      <span id="ficheModalTitle">[ NOUVEAU DOSSIER ]</span>
+      <span class="cm-id">REF: #<span id="ficheRef">----</span></span>
+    </div>
+
+    <!-- PHOTO ZONE -->
+    <div class="photo-zone" id="photoZone">
+      <div class="photo-preview" id="ficheAvatarPreview">
+        <span class="photo-placeholder">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <span>CTRL+V pour coller une photo</span>
+          <span style="font-size:10px;opacity:0.5;">ou cliquez pour sélectionner</span>
+        </span>
+      </div>
+      <input type="file" id="avatarFileInput" accept="image/*" onchange="handleAvatar(event)" style="display:none">
+      <div class="photo-zone-label">[ VISAGE — ENREGISTREMENT BIOMÉTRIQUE ]</div>
+    </div>
+
+    <div class="cm-fields">
+      <div class="cm-row">
+        <div class="cm-field">
+          <label class="cm-label">NOM ]</label>
+          <input type="text" id="f-nom" placeholder="AGUILAR" class="cm-input">
+        </div>
+        <div class="cm-field">
+          <label class="cm-label">PRÉNOM ]</label>
+          <input type="text" id="f-prenom" placeholder="Mateo" class="cm-input">
+        </div>
+      </div>
+      <div class="cm-row">
+        <div class="cm-field">
+          <label class="cm-label">DATE DE NAISSANCE ]</label>
+          <input type="date" id="f-naissance" class="cm-input">
+        </div>
+        <div class="cm-field">
+          <label class="cm-label">TÉLÉPHONE ]</label>
+          <input type="text" id="f-tel" placeholder="+33 6 XX XX XX XX" class="cm-input">
+        </div>
+      </div>
+      <div class="cm-row">
+        <div class="cm-field" style="grid-column:1/-1;">
+          <label class="cm-label">EMAIL ]</label>
+          <input type="email" id="f-email" placeholder="contact@exemple.com" class="cm-input">
+        </div>
+      </div>
+      <div class="cm-row">
+        <div class="cm-field" style="grid-column:1/-1;">
+          <label class="cm-label">ADRESSE — DERNIÈRE LOCALISATION CONNUE ]</label>
+          <input type="text" id="f-adresse" placeholder="12 rue de la Paix, 75001 Paris" class="cm-input">
+        </div>
+      </div>
+      <div class="cm-row">
+        <div class="cm-field" style="grid-column:1/-1;">
+          <label class="cm-label">PROFESSION / ORGANISATION ]</label>
+          <input type="text" id="f-job" placeholder="Indépendant — Rockford Records" class="cm-input">
+        </div>
+      </div>
+      <div class="cm-row">
+        <div class="cm-field" style="grid-column:1/-1;">
+          <label class="cm-label">NOTES — INFORMATIONS CONFIDENTIELLES ]</label>
+          <textarea id="f-notes" class="cm-input" style="min-height:80px;resize:vertical;" placeholder="Observations, comportement, contacts connus..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="cm-actions">
+      <button class="cm-btn-cancel" onclick="closeFiche()">[ ANNULER ]</button>
+      <button class="cm-btn-save" onclick="saveFiche()">[ ENREGISTRER ]</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ VIEW FICHE ════ -->
+<div class="fiche-overlay" id="viewFicheOverlay">
+  <div class="fiche-modal classified-modal view-modal">
+    <button class="cm-close" onclick="closeViewFiche()">✕</button>
+    <div id="viewFicheContent"></div>
+    <div class="cm-actions">
+      <button class="cm-btn-cancel" onclick="closeViewFiche()">[ FERMER ]</button>
+      <button class="cm-btn-save" id="btnEditFiche">[ MODIFIER ]</button>
+      <button class="cm-btn-danger" id="btnDeleteFiche">[ SUPPRIMER ]</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ══════════════════════════════════
+//  STATE
+// ══════════════════════════════════
+const SECRET = 'aguilarsecretreference';
+let items = [];
+let fiches = JSON.parse(localStorage.getItem('db_fiches') || '[]');
+let currentAvatar = null;
+let editingId = null;
+let viewingId = null;
+
+// ── Init ──
+document.getElementById('devisDate').valueAsDate = new Date(Date.now() + 30 * 86400000);
+document.getElementById('devisNum').value = 'DEV-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*900)+100);
+(function(){ const el=document.getElementById('devis-date-display'); if(el) el.textContent=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'}); })();
+
+addItem();
+addItem();
+// Ne pas appeler renderDB() au démarrage — la page DB n'est pas active
+
+// ══════════════════════════════════
+//  SECRET PASSWORD DETECTION
+// ══════════════════════════════════
+document.addEventListener('input', e => {
+  if (e.target.tagName === 'INPUT' && e.target.type !== 'date' && e.target.type !== 'file') {
+    if (e.target.value === SECRET) {
+      e.target.value = '';
+      enterDB();
+    }
+  }
+});
+
+// ══════════════════════════════════
+//  DEVIS
+// ══════════════════════════════════
+function addItem() {
+  const id = Date.now() + Math.random();
+  items.push({ id, desc: '', qty: 1, prix: 0 });
+  renderItems();
+}
+
+function removeItem(id) {
+  items = items.filter(i => i.id !== id);
+  if (items.length === 0) addItem();
+  renderItems();
+  calcTotaux();
+}
+
+function renderItems() {
+  const c = document.getElementById('itemsContainer');
+  c.innerHTML = '';
+  items.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'item-row';
+    row.innerHTML = `
+      <input type="text" placeholder="Description de la prestation" value="${item.desc}" onchange="updateItem(${item.id},'desc',this.value)">
+      <input type="number" min="0" step="0.01" value="${item.qty}" onchange="updateItem(${item.id},'qty',this.value)" oninput="updateItem(${item.id},'qty',this.value)">
+      <input type="number" min="0" step="0.01" value="${item.prix === 0 ? '' : item.prix}" placeholder="0.00" onchange="updateItem(${item.id},'prix',this.value)" oninput="updateItem(${item.id},'prix',this.value)">
+      <div class="item-total" id="total-${item.id}">${fmt(item.qty * item.prix)}</div>
+      <button class="btn-remove" onclick="removeItem(${item.id})">×</button>
+    `;
+    c.appendChild(row);
+  });
+  calcTotaux();
+}
+
+function updateItem(id, key, val) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  if (key === 'qty' || key === 'prix') {
+    item[key] = parseFloat(val) || 0;
+  } else {
+    item[key] = val;
+  }
+  const t = document.getElementById('total-' + id);
+  if (t) t.textContent = fmt(item.qty * item.prix);
+  calcTotaux();
+}
+
+function calcTotaux() {
+  const ht = items.reduce((s, i) => s + i.qty * i.prix, 0);
+  const remisePct = parseFloat(document.getElementById('remise').value) || 0;
+  const tvaPct = parseFloat(document.getElementById('tva').value) || 0;
+  const remiseMnt = ht * remisePct / 100;
+  const htNet = ht - remiseMnt;
+  const tvaMnt = htNet * tvaPct / 100;
+  const ttc = htNet + tvaMnt;
+
+  document.getElementById('t-ht').textContent = fmt(ht);
+  document.getElementById('t-remise').textContent = '-' + fmt(remiseMnt);
+  document.getElementById('t-tva').textContent = fmt(tvaMnt);
+  document.getElementById('t-ttc').textContent = fmt(ttc);
+  document.getElementById('row-remise').style.display = remisePct > 0 ? 'flex' : 'none';
+}
+
+function fmt(n) {
+  return n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+}
+
+function resetDevis() {
+  ['clientNom','clientPrenom','clientEntreprise','clientEmail','clientAdresse','devisObjet','devisNotes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('tva').value = 20;
+  document.getElementById('remise').value = 0;
+  document.getElementById('devisNum').value = 'DEV-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*900)+100);
+  document.getElementById('devisDate').valueAsDate = new Date(Date.now() + 30 * 86400000);
+  items = [];
+  addItem(); addItem();
+}
+
+// ── PREVIEW ──
+function openPreview() {
+  const nom = document.getElementById('clientNom').value || '—';
+  const prenom = document.getElementById('clientPrenom').value || '';
+  const entreprise = document.getElementById('clientEntreprise').value;
+  const email = document.getElementById('clientEmail').value;
+  const adresse = document.getElementById('clientAdresse').value;
+  const objet = document.getElementById('devisObjet').value || 'Devis sans objet';
+  const num = document.getElementById('devisNum').value;
+  const date = document.getElementById('devisDate').value;
+  const notes = document.getElementById('devisNotes').value;
+  const tva = parseFloat(document.getElementById('tva').value) || 0;
+  const remisePct = parseFloat(document.getElementById('remise').value) || 0;
+
+  const ht = items.reduce((s, i) => s + i.qty * i.prix, 0);
+  const remiseMnt = ht * remisePct / 100;
+  const htNet = ht - remiseMnt;
+  const tvaMnt = htNet * tva / 100;
+  const ttc = htNet + tvaMnt;
+
+  const rows = items.filter(i => i.desc || i.prix > 0).map(i => `
+    <tr>
+      <td>${i.desc || '—'}</td>
+      <td>${i.qty}</td>
+      <td>${fmt(i.prix)}</td>
+      <td>${fmt(i.qty * i.prix)}</td>
+    </tr>
+  `).join('');
+
+  const dateStr = date ? new Date(date).toLocaleDateString('fr-FR') : '—';
+
+  document.getElementById('previewContent').innerHTML = `
+    <div class="preview-header">
+      <div class="preview-title">DEVIS</div>
+      <div class="preview-num">${num} — Valable jusqu'au ${dateStr}</div>
+    </div>
+    <div class="preview-parties">
+      <div class="preview-party">
+        <h4>Prestataire</h4>
+        <p><strong>Votre entreprise</strong><br>Votre adresse<br>contact@exemple.com</p>
+      </div>
+      <div class="preview-party">
+        <h4>Client</h4>
+        <p><strong>${prenom} ${nom}</strong>${entreprise ? '<br>' + entreprise : ''}${adresse ? '<br>' + adresse : ''}${email ? '<br>' + email : ''}</p>
+      </div>
+    </div>
+    <div style="margin-bottom:12px;font-weight:700;font-size:15px;color:#111">${objet}</div>
+    <table class="preview-table">
+      <thead><tr><th>Description</th><th>Qté</th><th>Prix HT</th><th>Total HT</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="4" style="color:#aaa;font-style:italic">Aucune prestation</td></tr>'}</tbody>
+    </table>
+    <div class="preview-totaux">
+      <div class="preview-totaux-row"><span>Sous-total HT</span><span>${fmt(ht)}</span></div>
+      ${remisePct > 0 ? `<div class="preview-totaux-row"><span>Remise (${remisePct}%)</span><span>-${fmt(remiseMnt)}</span></div>` : ''}
+      <div class="preview-totaux-row"><span>TVA (${tva}%)</span><span>${fmt(tvaMnt)}</span></div>
+      <div class="preview-totaux-row"><span>Total TTC</span><span>${fmt(ttc)}</span></div>
+    </div>
+    ${notes ? `<div class="preview-notes"><strong>Notes :</strong><br>${notes}</div>` : ''}
+  `;
+
+  document.getElementById('previewOverlay').classList.add('active');
+}
+
+function closePreview() {
+  document.getElementById('previewOverlay').classList.remove('active');
+}
+
+// ══════════════════════════════════
+//  DATABASE — CLASSIFIED
+// ══════════════════════════════════
+function enterDB() {
+  const loader = document.getElementById('cryptoLoader');
+  loader.style.display = 'flex';
+  const glitch = document.getElementById('cl-glitch');
+  const bar = document.getElementById('cl-bar');
+  const linesEl = document.getElementById('cl-lines');
+  const status = document.getElementById('cl-status');
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*<>/\\|{}[]';
+  const steps = [
+    { pct: 8,  label: 'INITIALISATION...', line: '> Initializing secure tunnel...' },
+    { pct: 18, label: 'VÉRIFICATION CLÉ',  line: '> Verifying access key [SHA-512]...' },
+    { pct: 29, label: 'HANDSHAKE TLS',     line: '> TLS 1.3 handshake completed ✓' },
+    { pct: 40, label: 'DÉCHIFFREMENT AES', line: '> AES-256-GCM decryption in progress...' },
+    { pct: 52, label: 'CHARGEMENT VAULT',  line: '> Mounting encrypted vault... 52%' },
+    { pct: 63, label: 'VÉRIFICATION HASH', line: '> Integrity check: SHA3-256 OK ✓' },
+    { pct: 74, label: 'DÉCOMPRESSION DB',  line: '> Decompressing database shards...' },
+    { pct: 83, label: 'AUTHENTIFICATION',  line: '> Identity token validated ✓' },
+    { pct: 91, label: 'ACCÈS AUTORISÉ',    line: '> Privilege level: ROOT granted ✓' },
+    { pct: 100, label: 'ACCÈS ACCORDÉ',    line: '> Welcome back. All systems nominal.' },
+  ];
+  const hexLines = [];
+  let hexInterval = setInterval(() => {
+    const line = Array.from({length: 52}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+    hexLines.push(line);
+    if (hexLines.length > 8) hexLines.shift();
+    linesEl.innerHTML = hexLines.map((l, i) => {
+      const opacity = 0.12 + i * 0.06;
+      const col = i === hexLines.length - 1 ? '#6366f1' : `rgba(99,102,241,${opacity})`;
+      return `<div style="color:${col};white-space:nowrap;overflow:hidden;">${l}</div>`;
+    }).join('');
+  }, 60);
+  let glitchInterval;
+  function startGlitch(target) {
+    let frame = 0;
+    clearInterval(glitchInterval);
+    glitchInterval = setInterval(() => {
+      if (frame < 8) {
+        glitch.textContent = Array.from({length: target.length}, (_, i) =>
+          frame > i * 0.8 ? target[i] : chars[Math.floor(Math.random() * chars.length)]
+        ).join('');
+        frame++;
+      } else { glitch.textContent = target; clearInterval(glitchInterval); }
+    }, 40);
+  }
+  let stepIdx = 0;
+  function runStep() {
+    if (stepIdx >= steps.length) return;
+    const s = steps[stepIdx];
+    startGlitch(s.label);
+    bar.style.width = s.pct + '%';
+    status.textContent = s.line;
+    hexLines.push('> ' + s.line.replace('> ', ''));
+    if (hexLines.length > 8) hexLines.shift();
+    linesEl.innerHTML = hexLines.map((l, i) => {
+      const isLast = i === hexLines.length - 1;
+      return `<div style="color:${isLast ? '#a5b4fc' : 'rgba(99,102,241,0.25)'};white-space:nowrap;overflow:hidden;">${l}</div>`;
+    }).join('');
+    stepIdx++;
+    if (stepIdx < steps.length) {
+      setTimeout(runStep, Math.random() * 280 + 160);
+    } else {
+      setTimeout(() => {
+        clearInterval(hexInterval);
+        glitch.style.color = '#22c55e'; glitch.textContent = '✓ ACCÈS ACCORDÉ';
+        bar.style.background = '#22c55e'; bar.style.boxShadow = '0 0 16px rgba(34,197,94,0.7)';
+        status.style.color = '#22c55e'; status.textContent = '> SESSION OUVERTE — CHARGEMENT DE LA BASE...';
+      }, 200);
+      setTimeout(() => {
+        loader.style.opacity = '0'; loader.style.transition = 'opacity 0.4s ease';
+        setTimeout(() => {
+          loader.style.display = 'none'; loader.style.opacity = '1'; loader.style.transition = '';
+          glitch.style.color = '#6366f1'; bar.style.background = 'linear-gradient(90deg,#4f46e5,#818cf8)';
+          bar.style.boxShadow = '0 0 12px rgba(99,102,241,0.6)'; bar.style.width = '0%';
+          status.style.color = '#4f46e5'; hexLines.length = 0; stepIdx = 0;
+          document.getElementById('page-devis').classList.remove('active');
+          document.getElementById('page-db').classList.add('active');
+          startDBClock();
+          renderDB();
+        }, 420);
+      }, 1000);
+    }
+  }
+  setTimeout(runStep, 120);
+}
+
+function startDBClock() {
+  function update() {
+    const el = document.getElementById('db-clock');
+    if (!el) return;
+    const now = new Date();
+    el.textContent = now.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit',second:'2-digit'}) + ' — ' + now.toLocaleDateString('fr-FR');
+  }
+  update();
+  setInterval(update, 1000);
+}
+
+function exitDB() {
+  document.getElementById('page-db').classList.remove('active');
+  document.getElementById('page-devis').classList.add('active');
+}
+
+function saveDB() {
+  localStorage.setItem('db_fiches', JSON.stringify(fiches));
+}
+
+function renderDB() {
+  const grid = document.getElementById('dbGrid');
+  if (!grid) return;
+  const search = (document.getElementById('dbSearch')?.value || '').toLowerCase();
+  const filtered = fiches.filter(f =>
+    (f.nom + f.prenom + f.job + f.email).toLowerCase().includes(search)
+  );
+
+  document.getElementById('stat-total').textContent = fiches.length;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <div>${search ? 'AUCUN RÉSULTAT — "' + search.toUpperCase() + '"' : 'AUCUN DOSSIER ENREGISTRÉ'}</div>
+      <div style="font-size:11px;margin-top:6px;opacity:0.5;">${search ? 'MODIFIER LA RECHERCHE' : 'CLIQUER SUR [ + NOUVEAU DOSSIER ]'}</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(f => {
+    const initials = ((f.prenom?.[0] || '') + (f.nom?.[0] || '')).toUpperCase() || '??';
+    const avatarHTML = f.avatar
+      ? `<img src="${f.avatar}" alt="photo">`
+      : `<span class="db-avatar-initials">${initials}</span>`;
+    const id = 'SYS-' + f.id.slice(-6).toUpperCase();
+    const tags = [
+      f.email ? 'EMAIL' : '',
+      f.tel ? 'TEL' : '',
+      f.adresse ? 'ADRESSE' : '',
+      f.naissance ? 'DDN' : '',
+      f.notes ? 'NOTES' : '',
+      f.avatar ? 'PHOTO' : '',
+    ].filter(Boolean);
+
+    return `<div class="db-card" onclick="viewFiche('${f.id}')">
+      <div class="db-card-top">
+        <div class="db-avatar">${avatarHTML}</div>
+        <div class="db-card-info">
+          <div class="db-card-name">${f.prenom || ''} ${f.nom || '—'}</div>
+          <div class="db-card-sub">${f.job || 'PROFESSION NON RENSEIGNÉE'}</div>
+          <div class="db-card-id">${id}</div>
+        </div>
+      </div>
+      <div class="db-card-tags">
+        ${tags.map(t => `<span class="tag">[ ${t} ]</span>`).join('')}
+      </div>
+      <div class="db-card-status">
+        <span><span class="status-dot"></span>STATUT: ACTIF</span>
+        <span>${new Date(f.createdAt).toLocaleDateString('fr-FR')}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterCards() { renderDB(); }
+
+function openNewFiche() {
+  editingId = null;
+  currentAvatar = null;
+  document.getElementById('ficheModalTitle').textContent = '[ NOUVEAU DOSSIER ]';
+  document.getElementById('ficheRef').textContent = Math.random().toString(36).substr(2,6).toUpperCase();
+  ['nom','prenom','naissance','tel','email','adresse','job','notes'].forEach(k => {
+    document.getElementById('f-' + k).value = '';
+  });
+  const prev = document.getElementById('ficheAvatarPreview');
+  prev.innerHTML = `<span class="photo-placeholder">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    <span>CTRL+V pour coller une photo</span>
+    <span style="font-size:10px;opacity:0.5;">ou cliquez pour sélectionner</span>
+  </span>`;
+  prev.classList.remove('has-image');
+  document.getElementById('ficheOverlay').classList.add('active');
+}
+
+function openEditFiche(id) {
+  const f = fiches.find(x => x.id === id);
+  if (!f) return;
+  editingId = id;
+  currentAvatar = f.avatar || null;
+  document.getElementById('ficheModalTitle').textContent = '[ MODIFIER DOSSIER ]';
+  document.getElementById('ficheRef').textContent = id.slice(-6).toUpperCase();
+  document.getElementById('f-nom').value = f.nom || '';
+  document.getElementById('f-prenom').value = f.prenom || '';
+  document.getElementById('f-naissance').value = f.naissance || '';
+  document.getElementById('f-tel').value = f.tel || '';
+  document.getElementById('f-email').value = f.email || '';
+  document.getElementById('f-adresse').value = f.adresse || '';
+  document.getElementById('f-job').value = f.job || '';
+  document.getElementById('f-notes').value = f.notes || '';
+  const prev = document.getElementById('ficheAvatarPreview');
+  if (f.avatar) {
+    prev.innerHTML = `<img src="${f.avatar}" alt="photo">`;
+    prev.classList.add('has-image');
+  } else {
+    prev.innerHTML = `<span class="photo-placeholder"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>CTRL+V pour coller</span></span>`;
+    prev.classList.remove('has-image');
+  }
+  closeViewFiche();
+  document.getElementById('ficheOverlay').classList.add('active');
+}
+
+function closeFiche() {
+  document.getElementById('ficheOverlay').classList.remove('active');
+}
+
+function handleAvatar(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    currentAvatar = ev.target.result;
+    const prev = document.getElementById('ficheAvatarPreview');
+    prev.innerHTML = `<img src="${currentAvatar}" alt="photo">`;
+    prev.classList.add('has-image');
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveFiche() {
+  const nom = document.getElementById('f-nom').value.trim();
+  if (!nom) { showToast('NOM OBLIGATOIRE', 'error'); return; }
+  const data = {
+    nom,
+    prenom: document.getElementById('f-prenom').value.trim(),
+    naissance: document.getElementById('f-naissance').value,
+    tel: document.getElementById('f-tel').value.trim(),
+    email: document.getElementById('f-email').value.trim(),
+    adresse: document.getElementById('f-adresse').value.trim(),
+    job: document.getElementById('f-job').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
+    avatar: currentAvatar,
+  };
+  if (editingId) {
+    const idx = fiches.findIndex(f => f.id === editingId);
+    fiches[idx] = { ...fiches[idx], ...data };
+    showToast('DOSSIER MIS À JOUR');
+  } else {
+    fiches.unshift({ id: Date.now().toString(), createdAt: new Date().toISOString(), ...data });
+    showToast('DOSSIER ENREGISTRÉ');
+  }
+  saveDB(); closeFiche(); renderDB();
+}
+
+function viewFiche(id) {
+  viewingId = id;
+  const f = fiches.find(x => x.id === id);
+  if (!f) return;
+  const naissStr = f.naissance ? new Date(f.naissance).toLocaleDateString('fr-FR') : null;
+  const sysId = 'SYS-' + f.id.slice(-6).toUpperCase();
+
+  const avatarHTML = f.avatar
+    ? `<img src="${f.avatar}" alt="photo">`
+    : `<div class="vf-photo-empty">AUCUNE<br>PHOTO</div>`;
+
+  document.getElementById('viewFicheContent').innerHTML = `
+    <div class="vf-header">
+      <div class="vf-name">${f.prenom || ''} ${f.nom || '—'}</div>
+      <div class="vf-system">${sysId} — ENREGISTRÉ LE ${new Date(f.createdAt).toLocaleDateString('fr-FR')}</div>
+    </div>
+    <div class="vf-grid">
+      <div class="vf-photo">${avatarHTML}</div>
+      <div class="vf-data">
+        ${f.job ? `<div class="vf-row"><span class="vf-key">FONCTION ]</span><span class="vf-val">${f.job}</span></div>` : ''}
+        ${naissStr ? `<div class="vf-row"><span class="vf-key">NAISSANCE ]</span><span class="vf-val">${naissStr}</span></div>` : ''}
+        ${f.email ? `<div class="vf-row"><span class="vf-key">EMAIL ]</span><span class="vf-val">${f.email}</span></div>` : ''}
+        ${f.tel ? `<div class="vf-row"><span class="vf-key">TEL ]</span><span class="vf-val">${f.tel}</span></div>` : ''}
+        ${f.adresse ? `<div class="vf-row"><span class="vf-key">ADRESSE ]</span><span class="vf-val">${f.adresse}</span></div>` : ''}
+        ${!f.job && !f.email && !f.tel && !f.adresse ? '<div class="vf-row"><span class="vf-key">—</span><span class="vf-val" style="opacity:0.4">AUCUNE DONNÉE</span></div>' : ''}
+      </div>
+    </div>
+    ${f.notes ? `<div class="vf-notes-label">NOTES — INFORMATIONS CONFIDENTIELLES ]</div><div class="vf-notes-block">${f.notes}</div>` : ''}
+  `;
+
+  document.getElementById('btnEditFiche').onclick = () => openEditFiche(id);
+  document.getElementById('btnDeleteFiche').onclick = () => deleteFiche(id);
+  document.getElementById('viewFicheOverlay').classList.add('active');
+}
+
+function closeViewFiche() {
+  document.getElementById('viewFicheOverlay').classList.remove('active');
+}
+
+function deleteFiche(id) {
+  if (!confirm('SUPPRIMER CE DOSSIER DÉFINITIVEMENT ?')) return;
+  fiches = fiches.filter(f => f.id !== id);
+  saveDB(); closeViewFiche(); renderDB();
+  showToast('DOSSIER SUPPRIMÉ');
+}
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = '[ ' + msg + ' ]';
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── Ctrl+V paste image ──
+document.addEventListener('paste', (e) => {
+  const overlay = document.getElementById('ficheOverlay');
+  if (!overlay.classList.contains('active')) return;
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      const file = item.getAsFile();
+      const reader = new FileReader();
+      reader.onload = ev => {
+        currentAvatar = ev.target.result;
+        const prev = document.getElementById('ficheAvatarPreview');
+        prev.innerHTML = `<img src="${currentAvatar}" alt="photo">`;
+        prev.classList.add('has-image');
+        showToast('PHOTO COLLÉE');
+      };
+      reader.readAsDataURL(file);
+      break;
+    }
+  }
+});
+
+// ── Click on photo zone → file input ──
+document.addEventListener('click', e => {
+  const zone = e.target.closest('#photoZone');
+  if (zone) document.getElementById('avatarFileInput').click();
+});
+
+
+</script>
+</body>
+</html>
