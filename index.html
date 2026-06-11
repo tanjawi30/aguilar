@@ -881,13 +881,13 @@ footer{position:relative;z-index:2;border-top:1px solid var(--glass-b);padding:2
     </div>
 
     <!-- LAYOUT TABS + CONTENT -->
-    <div style="display:grid;grid-template-columns:200px 1fr;gap:1px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);border-radius:20px;overflow:hidden">
+    <div style="display:grid;grid-template-columns:200px 1fr;gap:1px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);border-radius:20px;overflow:hidden;cursor:auto">
 
       <!-- SIDEBAR TABS -->
-      <div id="ck-tabs" style="background:var(--bg2);padding:1rem 0;overflow-y:auto;max-height:520px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent"></div>
+      <div id="ck-tabs" style="background:var(--bg2);padding:1rem 0;overflow-y:auto;max-height:520px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent;cursor:auto"></div>
 
       <!-- CONTENT PANEL -->
-      <div id="ck-content" style="background:rgba(255,255,255,.02);padding:1.5rem;overflow-y:auto;max-height:520px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent"></div>
+      <div id="ck-content" style="background:rgba(255,255,255,.02);padding:1.5rem;overflow-y:auto;max-height:520px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.08) transparent;cursor:auto"></div>
 
     </div>
   </div>
@@ -923,6 +923,14 @@ document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.le
 document.addEventListener('mouseover',e=>{
   if(e.target.closest('a,button,.cc,.oc,.ai,.id-cell,.gc,.ccard'))ring.classList.add('big');
   else ring.classList.remove('big');
+},{passive:true});
+/* Fix cursor on interactive elements inside checklist */
+document.addEventListener('mouseover',e=>{
+  if(e.target.closest('#ck-tabs,#ck-content,#ck-reset')){
+    cur.style.opacity='0';ring.style.opacity='0';
+  } else {
+    cur.style.opacity='1';ring.style.opacity='1';
+  }
 },{passive:true});
 
 /* LOADER */
@@ -964,6 +972,27 @@ window.addEventListener('scroll',()=>nb.classList.toggle('scrolled',window.scrol
 
 /* ===== CHECKLIST ===== */
 (function(){
+
+/* Inject scoped CSS for checklist hover states */
+const s=document.createElement('style');
+s.textContent=`
+  #ck-tabs button{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 16px;width:100%;background:none;border:none;border-left:2px solid transparent;color:var(--muted);font-family:var(--ff-b);font-size:.78rem;font-weight:300;cursor:pointer;text-align:left;transition:background .12s,color .12s,border-color .12s}
+  #ck-tabs button:hover{background:rgba(255,255,255,.04);color:var(--text)}
+  #ck-tabs button.ck-active{background:rgba(232,52,26,.07);border-left-color:var(--rouge);color:var(--text);font-weight:500}
+  #ck-tabs button.ck-active .ck-badge{color:var(--rouge)}
+  .ck-tab-icon{font-size:.9rem;flex-shrink:0}
+  .ck-tab-name{flex:1;line-height:1.3}
+  .ck-badge{font-family:var(--ff-m);font-size:.55rem;background:rgba(255,255,255,.04);padding:2px 5px;border-radius:4px;flex-shrink:0;color:var(--muted2);transition:color .12s}
+  .ck-item{display:flex;align-items:flex-start;gap:10px;padding:9px 8px 9px 5px;border-radius:7px;border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:2px;cursor:pointer;transition:background .1s}
+  .ck-item:hover{background:rgba(255,255,255,.04)}
+  .ck-box{width:16px;height:16px;border-radius:4px;border:1.5px solid rgba(255,255,255,.15);background:transparent;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .ck-box.on{background:var(--rouge);border-color:var(--rouge)}
+  .ck-txt{font-size:.82rem;color:var(--text);line-height:1.55;flex:1}
+  .ck-txt.done{color:rgba(237,233,226,.3);text-decoration:line-through;text-decoration-color:rgba(255,255,255,.15)}
+  #ck-reset{cursor:pointer}
+  #ck-reset:hover{color:var(--rouge)!important;border-color:var(--rouge)!important}
+`;
+document.head.appendChild(s);
 const ICONS={'Monde & Setting':'🗺️','Système de jeu':'🎲','L\'asso DirtKrew':'🏢','PNJ essentiels':'👥','Arcs narratifs':'🔥','Bikelife & Motos':'🏍️','Ambiance & Esthétique':'🎨','Méta & Logistique':'⚙️'};
 const DATA={
   'Monde & Setting':{items:[
@@ -1064,44 +1093,51 @@ function ckRenderProgress(){
 }
 
 function ckRenderTabs(){
-  document.getElementById('ck-tabs').innerHTML=CATS.map(c=>{
+  document.getElementById('ck-tabs').innerHTML=CATS.map((c,idx)=>{
     const done=catDone(c);const tot=DATA[c].items.length;
-    const active=c===curCat;
-    return`<button onclick="ckSwitch(${JSON.stringify(c)})" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 16px;width:100%;background:${active?'rgba(232,52,26,.07)':'none'};border:none;border-left:2px solid ${active?'var(--rouge)':'transparent'};color:${active?'var(--text)':'var(--muted)'};font-family:var(--ff-b);font-size:.78rem;font-weight:${active?500:300};cursor:pointer;text-align:left;transition:all .12s" onmouseover="if('${c}'!==curCat)this.style.background='rgba(255,255,255,.03)'" onmouseout="if('${c}'!==curCat)this.style.background='none'">
-      <span style="font-size:.9rem;flex-shrink:0">${ICONS[c]}</span>
-      <span style="flex:1;line-height:1.3">${c}</span>
-      <span style="font-family:var(--ff-m);font-size:.55rem;color:${active?'var(--rouge)':'var(--muted2)'};background:rgba(255,255,255,.04);padding:2px 5px;border-radius:4px;flex-shrink:0">${done}/${tot}</span>
-    </button>`;
+    return'<button class="'+(c===curCat?'ck-active':'')+'" data-ck-idx="'+idx+'">'
+      +'<span class="ck-tab-icon">'+ICONS[c]+'</span>'
+      +'<span class="ck-tab-name">'+c+'</span>'
+      +'<span class="ck-badge">'+done+'/'+tot+'</span>'
+      +'</button>';
   }).join('');
+  document.getElementById('ck-tabs').querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click',function(){ckSwitch(CATS[+this.dataset.ckIdx]);});
+  });
 }
 
 function ckRenderContent(){
   const items=DATA[curCat].items;
   const done=catDone(curCat);
-  const legend=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1.2rem;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
-    ${Object.entries(TAGS).map(([k,v])=>`<span style="display:flex;align-items:center;gap:5px;font-size:.68rem;color:var(--muted2)"><span style="font-family:var(--ff-m);font-size:.5rem;padding:2px 6px;border-radius:3px;background:${v.bg};color:${v.c}">${v.lbl}</span></span>`).join('')}
-  </div>`;
-  const hdr=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid rgba(255,255,255,.06)">
-    <span style="font-size:1.1rem">${ICONS[curCat]}</span>
-    <span style="font-family:var(--ff-d);font-size:1.1rem;letter-spacing:.04em;color:var(--text)">${curCat}</span>
-    <span style="font-family:var(--ff-m);font-size:.58rem;color:var(--muted2);margin-left:auto">${done} / ${items.length}</span>
-  </div>`;
-  const rows=items.map((item,i)=>{
-    const key=curCat+'_'+i;const on=!!checked[key];const T=TAGS[item.tag]||TAGS.opt;
-    return`<div onclick="ckToggle(${JSON.stringify(key)})" style="display:flex;align-items:flex-start;gap:10px;padding:9px 8px 9px 5px;border-radius:7px;border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:2px;cursor:pointer;transition:background .1s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background='none'">
-      <div style="width:16px;height:16px;border-radius:4px;border:1.5px solid ${on?'var(--rouge)':'rgba(255,255,255,.15)'};background:${on?'var(--rouge)':'transparent'};flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s">
-        ${on?'<span style="color:#fff;font-size:9px;font-weight:700;line-height:1">✓</span>':''}
-      </div>
-      <span style="font-size:.82rem;color:${on?'rgba(237,233,226,.3)':'var(--text)'};line-height:1.55;flex:1;${on?'text-decoration:line-through;text-decoration-color:rgba(255,255,255,.15)':''}">${item.t}</span>
-      <span style="font-family:var(--ff-m);font-size:.5rem;padding:2px 6px;border-radius:3px;background:${T.bg};color:${T.c};flex-shrink:0;margin-top:2px">${T.lbl}</span>
-    </div>`;
+  const legendHtml='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1.2rem;padding:8px 12px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.05)">'
+    +Object.values(TAGS).map(v=>'<span style="display:flex;align-items:center;gap:5px;font-size:.68rem;color:var(--muted2)"><span style="font-family:var(--ff-m);font-size:.5rem;padding:2px 6px;border-radius:3px;background:'+v.bg+';color:'+v.c+'">'+v.lbl+'</span></span>').join('')
+    +'</div>';
+  const hdrHtml='<div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid rgba(255,255,255,.06)">'
+    +'<span style="font-size:1.1rem">'+ICONS[curCat]+'</span>'
+    +'<span style="font-family:var(--ff-d);font-size:1.1rem;letter-spacing:.04em;color:var(--text)">'+curCat+'</span>'
+    +'<span style="font-family:var(--ff-m);font-size:.58rem;color:var(--muted2);margin-left:auto">'+done+' / '+items.length+'</span>'
+    +'</div>';
+  const rowsHtml=items.map((item,i)=>{
+    const key=curCat+'__'+i;
+    const on=!!checked[key];
+    const T=TAGS[item.tag]||TAGS.opt;
+    return'<div class="ck-item" data-ck-key="'+key+'">'
+      +'<div class="ck-box'+(on?' on':'')+'">'+( on?'<span style="color:#fff;font-size:9px;font-weight:700;line-height:1">✓</span>':'' )+'</div>'
+      +'<span class="ck-txt'+(on?' done':'')+'">'+item.t+'</span>'
+      +'<span style="font-family:var(--ff-m);font-size:.5rem;padding:2px 6px;border-radius:3px;background:'+T.bg+';color:'+T.c+';flex-shrink:0;margin-top:2px">'+T.lbl+'</span>'
+      +'</div>';
   }).join('');
-  document.getElementById('ck-content').innerHTML=legend+hdr+rows;
+  document.getElementById('ck-content').innerHTML=legendHtml+hdrHtml+rowsHtml;
+  document.getElementById('ck-content').querySelectorAll('.ck-item').forEach(el=>{
+    el.addEventListener('click',function(){ckToggle(this.dataset.ckKey);});
+  });
 }
 
 window.ckToggle=function(key){checked[key]=!checked[key];ckRenderContent();ckRenderProgress();ckRenderTabs();};
 window.ckSwitch=function(cat){curCat=cat;ckRenderTabs();ckRenderContent();};
-document.getElementById('ck-reset').addEventListener('click',()=>{if(confirm('Réinitialiser toutes les cases ?')){checked={};ckRenderContent();ckRenderProgress();ckRenderTabs();}});
+document.getElementById('ck-reset').addEventListener('click',function(){
+  if(confirm('Réinitialiser toutes les cases ?')){checked={};ckRenderContent();ckRenderProgress();ckRenderTabs();}
+});
 
 ckRenderTabs();ckRenderContent();ckRenderProgress();
 })();
