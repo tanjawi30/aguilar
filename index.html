@@ -1,1 +1,1148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PETITES FRAPPES — DOSSIER WL</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    --noir: #080808;
+    --asphalte: #141414;
+    --surface: #1a1a1a;
+    --surface2: #222222;
+    --rouge: #C0392B;
+    --rouge-vif: #E74C3C;
+    --orange: #E8651A;
+    --blanc: #F0EDE8;
+    --gris: #888;
+    --gris-clair: #bbb;
+    --vert-neon: #39FF14;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--noir);
+    color: var(--blanc);
+    font-family: 'Space Grotesk', sans-serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* GRAIN TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(8,8,8,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(192,57,43,0.3);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+
+  .nav-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.15em;
+    color: var(--rouge-vif);
+  }
+
+  .nav-status {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--vert-neon);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-status::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--vert-neon);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gris);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--rouge-vif); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 3rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 70% 40%, rgba(192,57,43,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 70%, rgba(232,101,26,0.08) 0%, transparent 60%);
+  }
+
+  .hero-grid {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      linear-gradient(rgba(192,57,43,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(192,57,43,0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
+  }
+
+  .hero-tag {
+    position: absolute;
+    top: 80px; right: 40px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18rem;
+    color: rgba(255,255,255,0.02);
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--rouge-vif);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 14vw, 11rem);
+    line-height: 0.88;
+    letter-spacing: 0.02em;
+    position: relative;
+    z-index: 1;
+    color: var(--blanc);
+  }
+
+  .hero-title .accent { color: var(--rouge-vif); }
+
+  .hero-title .stroke {
+    -webkit-text-stroke: 2px var(--blanc);
+    color: transparent;
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--gris-clair);
+    max-width: 480px;
+    margin-top: 1.5rem;
+    line-height: 1.7;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 3rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .hero-stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: var(--blanc);
+    line-height: 1;
+  }
+
+  .hero-stat-num .unit {
+    font-size: 1.2rem;
+    color: var(--rouge-vif);
+  }
+
+  .hero-stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--gris);
+    text-transform: uppercase;
+  }
+
+  .hero-divider {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, rgba(192,57,43,0.4), transparent);
+    align-self: center;
+  }
+
+  /* SECTIONS COMMUNES */
+  section {
+    padding: 5rem 3rem;
+    position: relative;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    color: var(--rouge-vif);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--rouge-vif);
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    margin-bottom: 2.5rem;
+  }
+
+  /* DIVIDER GRUNGE */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(192,57,43,0.3), rgba(232,101,26,0.2), transparent);
+    margin: 0 3rem;
+  }
+
+  /* BACKGROUND SECTIONS */
+  .bg-surface { background: var(--asphalte); }
+  .bg-surface2 { background: var(--surface); }
+
+  /* === JOUEURS === */
+  .players-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: rgba(192,57,43,0.15);
+    border: 1px solid rgba(192,57,43,0.15);
+  }
+
+  .player-card {
+    background: var(--asphalte);
+    padding: 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
+
+  .player-card:hover { background: var(--surface2); }
+
+  .player-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--rouge-vif);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.3s;
+  }
+
+  .player-card:hover::before { transform: scaleY(1); }
+
+  .player-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+    position: absolute;
+    top: 0.5rem; right: 1rem;
+  }
+
+  .player-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .player-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.08em;
+    color: var(--blanc);
+    margin-bottom: 1rem;
+  }
+
+  .player-bg {
+    font-size: 0.82rem;
+    color: var(--gris-clair);
+    line-height: 1.65;
+    border-left: 2px solid rgba(192,57,43,0.3);
+    padding-left: 1rem;
+  }
+
+  .player-trait {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    padding: 3px 8px;
+    border: 1px solid rgba(232,101,26,0.3);
+    color: var(--orange);
+    margin-top: 1rem;
+    text-transform: uppercase;
+  }
+
+  /* === ORIGINE === */
+  .lore-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .lore-grid { grid-template-columns: 1fr; }
+  }
+
+  .lore-block {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 2rem;
+    position: relative;
+  }
+
+  .lore-block::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--rouge), transparent);
+  }
+
+  .lore-icon {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .lore-block h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+    color: var(--blanc);
+  }
+
+  .lore-block p {
+    font-size: 0.88rem;
+    color: var(--gris-clair);
+    line-height: 1.75;
+  }
+
+  /* === TIMELINE / BASCULE === */
+  .timeline {
+    position: relative;
+    padding-left: 2.5rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--rouge-vif), rgba(192,57,43,0.1));
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 3rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .timeline-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: -2.75rem;
+    top: 4px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--rouge-vif);
+    border: 2px solid var(--asphalte);
+    box-shadow: 0 0 0 3px rgba(192,57,43,0.2);
+  }
+
+  .timeline-dot.trigger {
+    background: var(--orange);
+    box-shadow: 0 0 0 3px rgba(232,101,26,0.3);
+    width: 16px; height: 16px;
+    left: -2.9rem;
+  }
+
+  .timeline-date {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    color: var(--rouge-vif);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .timeline-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.06em;
+    color: var(--blanc);
+    margin-bottom: 0.6rem;
+  }
+
+  .timeline-body {
+    font-size: 0.86rem;
+    color: var(--gris-clair);
+    line-height: 1.75;
+    max-width: 620px;
+  }
+
+  .tag-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+    padding: 4px 10px;
+    background: rgba(192,57,43,0.12);
+    border: 1px solid rgba(192,57,43,0.3);
+    color: var(--rouge-vif);
+    text-transform: uppercase;
+    margin-top: 0.75rem;
+  }
+
+  .tag-badge.orange {
+    background: rgba(232,101,26,0.12);
+    border-color: rgba(232,101,26,0.3);
+    color: var(--orange);
+  }
+
+  /* === CONNEXIONS === */
+  .connections-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .connection-card {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 1.5rem;
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+
+  .connection-card:hover {
+    border-color: rgba(192,57,43,0.2);
+  }
+
+  .conn-icon {
+    width: 40px; height: 40px;
+    background: rgba(192,57,43,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    color: var(--rouge-vif);
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+  }
+
+  .conn-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    color: var(--blanc);
+    margin-bottom: 0.25rem;
+  }
+
+  .conn-desc {
+    font-size: 0.78rem;
+    color: var(--gris);
+    line-height: 1.6;
+  }
+
+  .conn-link {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--orange);
+    letter-spacing: 0.12em;
+    margin-top: 0.4rem;
+    display: block;
+  }
+
+  /* === STYLE / IDENTITÉ === */
+  .style-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: rgba(255,255,255,0.05);
+  }
+
+  @media (max-width: 768px) {
+    .style-grid { grid-template-columns: 1fr; }
+  }
+
+  .style-cell {
+    background: var(--asphalte);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: background 0.2s;
+  }
+
+  .style-cell:hover { background: var(--surface); }
+
+  .style-emoji {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .style-cell h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+    color: var(--blanc);
+    margin-bottom: 0.75rem;
+  }
+
+  .style-cell p {
+    font-size: 0.82rem;
+    color: var(--gris);
+    line-height: 1.7;
+  }
+
+  .style-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .style-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    padding: 3px 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--gris);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* === FAÇADE LÉGALE === */
+  .legal-box {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .legal-box::before {
+    content: 'LÉGAL';
+    position: absolute;
+    top: -1rem; right: 2rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 8rem;
+    color: rgba(255,255,255,0.02);
+    letter-spacing: 0.1em;
+  }
+
+  .legal-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (max-width: 768px) {
+    .legal-content { grid-template-columns: 1fr; }
+  }
+
+  .legal-item h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.08em;
+    color: var(--blanc);
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legal-item h3 span {
+    font-size: 1rem;
+  }
+
+  .legal-item p, .legal-item li {
+    font-size: 0.84rem;
+    color: var(--gris-clair);
+    line-height: 1.75;
+  }
+
+  .legal-item ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .legal-item ul li::before {
+    content: '▸ ';
+    color: var(--rouge-vif);
+    font-size: 0.7rem;
+  }
+
+  /* === MOTOS === */
+  .moto-alert {
+    background: rgba(192,57,43,0.08);
+    border: 1px solid rgba(192,57,43,0.25);
+    border-left: 3px solid var(--rouge-vif);
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .moto-alert-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+    color: var(--rouge-vif);
+    margin-bottom: 0.5rem;
+  }
+
+  .moto-alert p {
+    font-size: 0.84rem;
+    color: var(--gris-clair);
+    line-height: 1.65;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 3rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.15);
+  }
+
+  .footer-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    color: var(--gris);
+    text-transform: uppercase;
+    text-align: right;
+  }
+
+  /* HIGHLIGHT TEXT */
+  .hl { color: var(--rouge-vif); }
+  .hl-o { color: var(--orange); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--noir); }
+  ::-webkit-scrollbar-thumb { background: var(--rouge); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">PETITES FRAPPES</div>
+  <div class="nav-status">DOSSIER ACTIF — INTRO WL</div>
+  <ul class="nav-links">
+    <li><a href="#joueurs">Joueurs</a></li>
+    <li><a href="#origine">Origine</a></li>
+    <li><a href="#bascule">Bascule</a></li>
+    <li><a href="#facade">Façade</a></li>
+    <li><a href="#identite">Identité</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-tag">PF</div>
+
+  <div>
+    <div class="hero-eyebrow">// DOSSIER DE PERSONNAGES — SERVEUR INTRO WL</div>
+    <h1 class="hero-title">
+      PETITES<br>
+      <span class="accent">FRAPPES</span>
+    </h1>
+    <p class="hero-sub">
+      Quatre gosses du bitume unis par la passion des machines et l'odeur de l'essence. Une famille de rue avant d'être un groupe. Une vie rangée qui commence à craquer.
+    </p>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-num">4<span class="unit">–6</span></span>
+        <span class="hero-stat-label">Joueurs au start</span>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">100<span class="unit">%</span></span>
+        <span class="hero-stat-label">Départ légal</span>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">0<span class="unit">cc</span></span>
+        <span class="hero-stat-label">Motos actuelles</span>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-num"><span class="unit">∞</span></span>
+        <span class="hero-stat-label">Potentiel</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- JOUEURS -->
+<section id="joueurs" class="bg-surface">
+  <div class="section-label">Fichier 01 — Membres</div>
+  <h2 class="section-title">LES <span class="hl">TÊTES</span></h2>
+
+  <div class="players-grid">
+
+    <div class="player-card">
+      <div class="player-num">01</div>
+      <div class="player-tag">// Alias</div>
+      <div class="player-name">NEARYZ</div>
+      <div class="player-bg">
+        Toujours le premier sur la machine, le dernier à rentrer. Nearyz a grandi en regardant son frère aîné faire des tours de piste les week-ends — la moto c'est dans le sang. Mécanicien dans l'âme, il peut retaper un carbu les yeux fermés. Sociable en surface, imprévisible en profondeur.
+      </div>
+      <div class="player-trait">Mécanicien — Moto</div>
+    </div>
+
+    <div class="player-card">
+      <div class="player-num">02</div>
+      <div class="player-tag">// Alias</div>
+      <div class="player-name">YURISQUA</div>
+      <div class="player-bg">
+        Le cerveau du groupe. Yurisqua planifie, anticipe, organise — sur la piste comme dans la vie. Son ambition le dépasse parfois. Il veut de l'argent, du respect, du style. La façade associative, c'est son idée. Il connaît des gens, dans la ville et autour.
+      </div>
+      <div class="player-trait">Stratège — Réseau</div>
+    </div>
+
+    <div class="player-card">
+      <div class="player-num">03</div>
+      <div class="player-tag">// Alias</div>
+      <div class="player-name">TANJAWI</div>
+      <div class="player-bg">
+        Il roule à l'instinct. Sur un quad ou un cross, Tanjawi est dans son élément — le reste du temps il cherche ses repères. Porté vers l'excès, les nuits qui durent, les substances qui font oublier. Un frère de cœur pour les autres, mais une bombe à retardement pour lui-même.
+      </div>
+      <div class="player-trait">Pilote — Quad</div>
+    </div>
+
+    <div class="player-card">
+      <div class="player-num">04</div>
+      <div class="player-tag">// Alias</div>
+      <div class="player-name">THENEC</div>
+      <div class="player-bg">
+        Discret jusqu'à disparaître. Thenec observe, enregistre, parle peu. Mais quand il parle, les autres écoutent. Son lien avec l'art urbain — tags, pieces, lettrages — lui donne une identité dans les quartiers. Il connaît des visages que les autres ne voient même pas.
+      </div>
+      <div class="player-trait">Graffiteur — Visuel</div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ORIGINE / LORE -->
+<section id="origine">
+  <div class="section-label">Fichier 02 — Backstory</div>
+  <h2 class="section-title">LA <span class="hl">GENÈSE</span></h2>
+
+  <div class="lore-grid">
+    <div class="lore-block">
+      <div class="lore-icon">🏁</div>
+      <h3>L'ENFANCE SUR LES PISTES</h3>
+      <p>Ils se sont rencontrés sur un terrain vague transformé en piste improvisée — entre 8 et 12 ans. Pas la même école, pas le même quartier, mais la même attirance pour les machines et la vitesse. Des étés entiers passés à réparer, rouler, tomber, recommencer. Ce que les autres appellent une passion, eux appellent ça une langue commune.</p>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-icon">🔗</div>
+      <h3>DES TRAMES ENTRE EUX</h3>
+      <p>
+        <strong style="color:var(--blanc)">Nearyz & Tanjawi</strong> — cousins éloignés, liés depuis le berceau. La famille sait que les deux font les 400 coups ensemble depuis toujours.<br><br>
+        <strong style="color:var(--blanc)">Yurisqua & Thenec</strong> — même immeuble, même palier pendant des années. Yurisqua a financé les premières bombes de Thenec. Thenec lui doit une.<br><br>
+        <strong style="color:var(--blanc)">Nearyz & Yurisqua</strong> — ont tenté une association bikelife deux ans plus tôt, sans suite. Le projet ressurgit.
+      </p>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-icon">👥</div>
+      <h3>RÉSEAUX DANS LA VILLE</h3>
+      <p>
+        — Le frère aîné de Nearyz tourne dans les milieux du tuning/mécanique. Des contacts, pas toujours nets.<br><br>
+        — L'oncle de Tanjawi a un garage en zone industrielle. Officiellement, il fait de la rémission de véhicules. Officieusement, il ne pose pas trop de questions.<br><br>
+        — Thenec fréquente une crew de writers qui contrôle les murs d'un quartier. Utile pour la discrétion.
+      </p>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-icon">🧠</div>
+      <h3>PROFIL PSYCHOLOGIQUE</h3>
+      <p>Tous les quatre partagent une attirance marquée pour les excès — la fête qui dure, les substances qui désinhibent, la luxure comme récompense. Ce n'est pas de l'autodestructeur conscient : c'est la façon dont ils décompressent, célèbrent, oublient. Un terreau fertile pour les mauvaises décisions.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MOTOS — JUSTIFICATION -->
+<section id="motos" class="bg-surface2">
+  <div class="section-label">Fichier 03 — Équipement</div>
+  <h2 class="section-title">POURQUOI <span class="hl">ZÉRO</span> MOTO</h2>
+
+  <div class="moto-alert">
+    <div class="moto-alert-title">⚠ SITUATION AU DÉPART</div>
+    <p>Le groupe ne possède plus aucune machine opérationnelle au moment du début de l'histoire. Voici pourquoi.</p>
+  </div>
+
+  <div class="lore-grid">
+    <div class="lore-block">
+      <h3>LE DÉPÔT SAISI</h3>
+      <p>Six mois avant le début, un rassemblement bikelife non déclaré a viré au clash avec la BAC. Résultat : trois motos saisies sur place, dont celles de Nearyz et Tanjawi. La procédure de récupération est longue, coûteuse, et peu probable. Les machines sont perdues.</p>
+    </div>
+    <div class="lore-block">
+      <h3>YURISQUA — VENDU POUR SURVIVRE</h3>
+      <p>Après une période de chômage et une dette contractée auprès d'un "ami", Yurisqua a dû revendre sa cross pour rembourser. Il garde la cicatrice. Cette humiliation économique est l'un des moteurs de son ambition actuelle.</p>
+    </div>
+    <div class="lore-block">
+      <h3>THENEC — JAMAIS EU DE LICENCE</h3>
+      <p>Thenec roulait off-road sur des terrains privés. Quand le terrain a été vendu à un promoteur, il n'avait plus de spot — et plus de machine légitimement utilisable. Sa quad est stockée dans le garage de l'oncle Tanjawi. Sans immatriculation et techniquement hors normes.</p>
+    </div>
+    <div class="lore-block">
+      <h3>L'OBJECTIF COMMUN</h3>
+      <p>Racheter du matériel propre (ou "propre") est la première motivation concrète du groupe. Ça donne une raison économique immédiate à toutes leurs démarches — légales ou non. La moto est le symbole, l'argent est le nerf.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BASCULE -->
+<section id="bascule" class="bg-surface">
+  <div class="section-label">Fichier 04 — Élément déclencheur</div>
+  <h2 class="section-title">LE <span class="hl">BASCULEMENT</span></h2>
+
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">Phase 0 — Départ</div>
+      <h3 class="timeline-title">L'ASSOCIATION BIKELIFE EST CRÉÉE</h3>
+      <p class="timeline-body">Le groupe monte une structure légale autour de la bikelife : rassemblements, initiations, démonstrations. Ça tourne. Pas d'argent, mais de la légitimité et de la visibilité. Ils organisent un premier rassemblement dans une salle communale. Quelques sponsors locaux. La mairie les félicite même.</p>
+      <span class="tag-badge">Légal</span>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot trigger"></div>
+      <div class="timeline-date">Phase 1 — Déclencheur</div>
+      <h3 class="timeline-title">L'ACCIDENT & LA DETTE</h3>
+      <p class="timeline-body">Lors d'un rassemblement, un participant se blesse sérieusement sur une machine non assurée rattachée officieusement à l'asso. La victime, ou sa famille, réclame une compensation. L'assurance ne couvre pas. Le groupe se retrouve face à une demande financière écrasante — plusieurs milliers d'euros — sous menace de plainte. Yurisqua a une semaine pour trouver une solution.</p>
+      <span class="tag-badge orange">Déclencheur</span>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">Phase 2 — Premier Pas</div>
+      <h3 class="timeline-title">UNE FAVEUR QUI COÛTE CHER</h3>
+      <p class="timeline-body">L'oncle de Tanjawi propose une solution : une "livraison" à effectuer, discret, pas de questions. Ce n'est pas grand chose — du matériel volé en transit, probablement. Tanjawi accepte seul au départ. Mais Nearyz l'accompagne. Et voilà comment deux membres du groupe posent un pied dans un monde qu'ils pensaient juste effleurer.</p>
+      <span class="tag-badge orange">Compromis</span>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-date">Phase 3 — Engrenage</div>
+      <h3 class="timeline-title">LE GROUPE EST MOUILLÉ</h3>
+      <p class="timeline-body">La faveur résolue, un contact de l'oncle revient. Il a vu que les gars sont sérieux, discrets, organisés. Il veut utiliser l'asso comme couverture logistique. La proposition est claire : continuer à faire tourner la structure légale, et laisser passer certaines choses en dessous. La rémunération permettrait de racheter des machines, rembourser les dettes, vivre mieux. Le groupe doit choisir collectivement — et c'est là que commencent les vraies tensions.</p>
+      <span class="tag-badge">Point de non retour</span>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FAÇADE LÉGALE -->
+<section id="facade">
+  <div class="section-label">Fichier 05 — Couverture</div>
+  <h2 class="section-title">FAÇADE <span class="hl">LÉGALE</span></h2>
+
+  <div class="legal-box">
+    <div class="legal-content">
+      <div class="legal-item">
+        <h3><span>🏍</span> L'ASSOCIATION</h3>
+        <p style="margin-bottom:1rem">L'association loi 1901 créée par Yurisqua s'appelle officiellement <strong style="color:var(--blanc)">"BLOC LIBRE"</strong> — une référence à la liberté sur la machine, mais aussi à l'ambivalence revendiquée entre légalité et marge. Elle est déclarée en préfecture, avec Yurisqua comme président et Nearyz comme trésorier.</p>
+        <ul>
+          <li>Organisation de rassemblements bikelife</li>
+          <li>Initiation moto/quad pour les jeunes</li>
+          <li>Partenariats avec garages locaux</li>
+          <li>Vente de goodies & merchandising</li>
+        </ul>
+      </div>
+
+      <div class="legal-item">
+        <h3><span>📅</span> ÉVÉNEMENTS PRÉVUS</h3>
+        <ul>
+          <li>Rasso mensuel hors-ville sur terrain privé</li>
+          <li>Tournoi cross inter-associatif (à terme)</li>
+          <li>Soirées de financement (légitimes)</li>
+          <li>Interventions dans les quartiers / collèges</li>
+          <li>Ventes aux enchères de pièces détachées</li>
+          <li>Stories / contenu réseaux sociaux</li>
+        </ul>
+      </div>
+
+      <div class="legal-item">
+        <h3><span>💶</span> REVENUS LÉGAUX</h3>
+        <p>Cotisations membres, subventions mairie, sponsoring local (pièces auto, vêtements streetwear), vente de maillots et stickers. Insuffisant pour rembourser les dettes — d'où la tentation.</p>
+      </div>
+
+      <div class="legal-item">
+        <h3><span>🎨</span> IDENTITÉ VISUELLE</h3>
+        <p>Thenec a designé l'identité : un logo agressif entre tag urbain et stencil industriel. Noir, rouge, orange. Le nom et le logo ont déjà une petite réputation locale avant même que l'asso soit officiellement active. Ça, ça sert.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONNEXIONS VILLE -->
+<section id="connexions" class="bg-surface2">
+  <div class="section-label">Fichier 06 — Réseau</div>
+  <h2 class="section-title">CONTACTS <span class="hl">EN VILLE</span></h2>
+
+  <div class="connections-list">
+    <div class="connection-card">
+      <div class="conn-icon">FRR</div>
+      <div>
+        <div class="conn-name">Le Frère Aîné — Nearyz</div>
+        <div class="conn-desc">Mécanicien gris. Tourne dans les milieux tuning avec des connexions dans les chop shops. Protège son petit frère en surface, mais ne refuse jamais un service.</div>
+        <span class="conn-link">→ Contact mécanique / véhicules</span>
+      </div>
+    </div>
+
+    <div class="connection-card">
+      <div class="conn-icon">ONK</div>
+      <div>
+        <div class="conn-name">L'Oncle — Tanjawi</div>
+        <div class="conn-desc">Garage en zone indus. Officiellement dépanneur. En pratique, transit de marchandises non déclarées. C'est lui qui ouvre la première porte vers l'illégal.</div>
+        <span class="conn-link">→ Logistique / stockage</span>
+      </div>
+    </div>
+
+    <div class="connection-card">
+      <div class="conn-icon">CRW</div>
+      <div>
+        <div class="conn-name">La Crew de Thenec</div>
+        <div class="conn-desc">Groupe de writers qui contrôle les murs d'un secteur. Pas des criminels, mais des yeux partout. Ils savent qui circule, qui fait quoi.</div>
+        <span class="conn-link">→ Info / terrain</span>
+      </div>
+    </div>
+
+    <div class="connection-card">
+      <div class="conn-icon">MRY</div>
+      <div>
+        <div class="conn-name">Mairie / Élu local</div>
+        <div class="conn-desc">Un conseiller municipal a sponsorisé l'asso pour ses "valeurs éducatives". Il ne sait pas exactement ce que fait le groupe — et il vaut mieux que ça reste ainsi.</div>
+        <span class="conn-link">→ Couverture institutionnelle</span>
+      </div>
+    </div>
+
+    <div class="connection-card">
+      <div class="conn-icon">GRG</div>
+      <div>
+        <div class="conn-name">Garage Partenaire</div>
+        <div class="conn-desc">Petit garage agréé qui signe les conventions de prêt de machines pour l'asso. Le patron sait que ça déborde un peu, mais il se tait contre un loyer arrangé.</div>
+        <span class="conn-link">→ Légitimité mécanique</span>
+      </div>
+    </div>
+
+    <div class="connection-card">
+      <div class="conn-icon">DLR</div>
+      <div>
+        <div class="conn-name">Contact de l'Oncle</div>
+        <div class="conn-desc">Inconnu au départ — apparaît après la première "faveur". Représente un réseau plus structuré qui cherche une couverture logistique propre. L'escalade.</div>
+        <span class="conn-link">→ Point de bascule</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- IDENTITÉ STYLE -->
+<section id="identite">
+  <div class="section-label">Fichier 07 — Style</div>
+  <h2 class="section-title">IDENTITÉ <span class="hl">VISUELLE</span></h2>
+
+  <div class="style-grid">
+    <div class="style-cell">
+      <span class="style-emoji">👕</span>
+      <h3>STREETWEAR</h3>
+      <p>Oversized hoodies, cargos baggy, sneakers limited. Aucun entre eux ne porte de vêtements "normaux". Le style est une armure sociale — et une carte de visite.</p>
+      <div class="style-tags">
+        <span class="style-tag">Baggy</span>
+        <span class="style-tag">Caps</span>
+        <span class="style-tag">Bomber</span>
+        <span class="style-tag">Balaclava</span>
+      </div>
+    </div>
+
+    <div class="style-cell">
+      <span class="style-emoji">🎵</span>
+      <h3>HIP-HOP</h3>
+      <p>Trap, drill, rap français des quartiers. La musique rythme les sessions, les trajets, les soirées. Yurisqua pose quelques freestyles. Tanjawi a une playlist pour chaque humeur.</p>
+      <div class="style-tags">
+        <span class="style-tag">Trap</span>
+        <span class="style-tag">Drill</span>
+        <span class="style-tag">Freestyle</span>
+        <span class="style-tag">Lo-fi</span>
+      </div>
+    </div>
+
+    <div class="style-cell">
+      <span class="style-emoji">🏍</span>
+      <h3>BIKELIFE</h3>
+      <p>Motocross, quad, stunt urbain. La culture bikelife c'est autant une esthétique qu'une pratique — capuchons et casques intégraux, wheelies filmés, réseaux sociaux de la vitesse.</p>
+      <div class="style-tags">
+        <span class="style-tag">Motocross</span>
+        <span class="style-tag">Quad</span>
+        <span class="style-tag">Stunt</span>
+        <span class="style-tag">Rasso</span>
+      </div>
+    </div>
+
+    <div class="style-cell">
+      <span class="style-emoji">🎨</span>
+      <h3>GRAFFITI</h3>
+      <p>Murs tagués, halls de gares, terrains vagues. Thenec est le représentant officiel, mais tous ont leur tag depuis l'adolescence. Le graffiti leur donne une empreinte dans la ville.</p>
+      <div class="style-tags">
+        <span class="style-tag">Tag</span>
+        <span class="style-tag">Wildstyle</span>
+        <span class="style-tag">Throwup</span>
+      </div>
+    </div>
+
+    <div class="style-cell">
+      <span class="style-emoji">🍸</span>
+      <h3>EXCÈS</h3>
+      <p>Soirées qui finissent à l'aube, substances récréatives, luxure assumée. Pas de morale dans le groupe sur ces sujets — juste une règle non dite : rester fonctionnel pour le groupe.</p>
+      <div class="style-tags">
+        <span class="style-tag">Fête</span>
+        <span class="style-tag">Alcool</span>
+        <span class="style-tag">Drogues douces</span>
+      </div>
+    </div>
+
+    <div class="style-cell">
+      <span class="style-emoji">📱</span>
+      <h3>PRÉSENCE DIGITALE</h3>
+      <p>Stories, reels, clips maison. L'association a un compte suivi dans la scène bikelife locale. Les vidéos de rasso font quelques milliers de vues. Couverture et notoriété.</p>
+      <div class="style-tags">
+        <span class="style-tag">Insta</span>
+        <span class="style-tag">TikTok</span>
+        <span class="style-tag">Clips</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">BLOC LIBRE © PETITES FRAPPES</div>
+  <div class="footer-meta">
+    DOSSIER WL — INTRO SERVER<br>
+    STATUT : PETITES FRAPPES<br>
+    JOUEURS : 4–6 MAX
+  </div>
+</footer>
+
+</body>
+</html>
