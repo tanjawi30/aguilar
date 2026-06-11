@@ -1,280 +1,928 @@
-
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLOC LIBRE · DirtKrew · Dossier Intro WL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-.wrap { padding: 1.5rem 0; font-family: var(--font-sans); }
-.cat-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.5rem; }
-.ct {
-  padding: 6px 14px; border-radius: var(--border-radius-md);
-  border: 0.5px solid var(--color-border-secondary);
-  background: var(--color-background-primary);
-  color: var(--color-text-secondary); cursor: pointer;
-  font-size: 13px; font-weight: 500; transition: all 0.12s;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --rouge:#E8341A;--rouge2:#C0200E;--orange:#E8701A;--orange2:#F5A034;
+  --jaune:#F5C234;
+  --bg:#06060A;--bg2:#0C0C12;
+  --glass:rgba(255,255,255,0.04);
+  --glass-b:rgba(255,255,255,0.09);
+  --glass-h:rgba(255,255,255,0.07);
+  --text:#EDE9E2;--muted:rgba(237,233,226,0.55);--muted2:rgba(237,233,226,0.28);
+  --ff-d:'Bebas Neue',sans-serif;
+  --ff-b:'DM Sans',sans-serif;
+  --ff-m:'DM Mono',monospace;
+  --vert:#39FF14;
 }
-.ct:hover { background: var(--color-background-secondary); }
-.ct.on { border-width: 1.5px; color: var(--color-text-primary); border-color: var(--color-border-primary); background: var(--color-background-primary); }
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--ff-b);font-weight:300;line-height:1.7;overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased}
 
-.progress-bar { height: 4px; background: var(--color-background-secondary); border-radius: 99px; margin-bottom: 1.5rem; overflow: hidden; }
-.progress-fill { height: 4px; border-radius: 99px; background: #7F77DD; transition: width 0.3s; }
-.progress-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; display: flex; justify-content: space-between; }
+/* CURSOR */
+#cur{width:8px;height:8px;background:var(--rouge);border-radius:50%;position:fixed;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);mix-blend-mode:normal;transition:transform .1s}
+#cur-ring{width:32px;height:32px;border:1px solid rgba(232,52,26,.5);border-radius:50%;position:fixed;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s}
+#cur-ring.big{width:52px;height:52px;border-color:rgba(232,52,26,.9)}
 
-.section-block { margin-bottom: 1.5rem; }
-.sec-header {
-  display: flex; align-items: center; gap: 8px;
-  padding-bottom: 8px; border-bottom: 0.5px solid var(--color-border-tertiary);
-  margin-bottom: 10px;
-}
-.sec-icon { font-size: 16px; color: var(--color-text-secondary); }
-.sec-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
-.sec-count { font-size: 11px; color: var(--color-text-secondary); margin-left: auto; }
+/* ORBS */
+#orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.07}
+.o1{width:650px;height:650px;background:var(--rouge);top:-200px;left:-200px;animation:of1 70s linear infinite}
+.o2{width:450px;height:450px;background:var(--orange);top:40%;right:-120px;animation:of2 65s linear infinite}
+.o3{width:350px;height:350px;background:var(--jaune);bottom:-80px;left:30%;animation:of3 55s linear infinite}
+@keyframes of1{0%,100%{transform:translate(0,0)}33%{transform:translate(60px,-80px)}66%{transform:translate(-40px,60px)}}
+@keyframes of2{0%,100%{transform:translate(0,0)}33%{transform:translate(-80px,60px)}66%{transform:translate(50px,-40px)}}
+@keyframes of3{0%,100%{transform:translate(0,0)}50%{transform:translate(80px,-50px)}}
 
-.item {
-  display: flex; align-items: flex-start; gap: 10px;
-  padding: 7px 0; border-bottom: 0.5px solid var(--color-border-tertiary);
-  cursor: pointer; transition: background 0.1s;
-}
-.item:last-child { border-bottom: none; }
-.item:hover { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding-left: 6px; }
-.checkbox {
-  width: 16px; height: 16px; border-radius: 4px;
-  border: 1.5px solid var(--color-border-secondary);
-  flex-shrink: 0; margin-top: 2px;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.12s;
-}
-.checkbox.checked { background: #7F77DD; border-color: #7F77DD; }
-.check-mark { color: white; font-size: 10px; display: none; }
-.checkbox.checked .check-mark { display: block; }
-.item-text { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; flex: 1; }
-.item-text.checked-text { color: var(--color-text-tertiary); text-decoration: line-through; }
-.tag {
-  font-size: 10px; font-weight: 500; padding: 2px 7px;
-  border-radius: 99px; flex-shrink: 0; margin-top: 2px;
-}
-.tag-hot { background: #FAECE7; color: #993C1D; }
-.tag-key { background: #EEEDFE; color: #3C3489; }
-.tag-opt { background: #F1EFE8; color: #444441; }
-.tag-lore { background: #E1F5EE; color: #0F6E56; }
+/* LOADER */
+#loader{position:fixed;inset:0;z-index:99990;display:flex;align-items:center;justify-content:center;background:var(--bg);transition:opacity 1s ease,visibility 1s ease}
+#loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
+#loader-center{display:flex;flex-direction:column;align-items:center;gap:0;position:relative;z-index:2}
+#loader-ring{position:relative;width:200px;height:200px}
+#loader-ring svg{width:100%;height:100%;position:absolute;top:0;left:0}
+.lr-track{fill:none;stroke:rgba(255,255,255,0.04);stroke-width:1}
+.lr-main{fill:none;stroke:url(#lg-loader);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:565;stroke-dashoffset:565;animation:lrFill 3.6s cubic-bezier(.4,0,.2,1) .3s forwards;transform-origin:center;transform:rotate(-90deg)}
+@keyframes lrFill{from{stroke-dashoffset:565}to{stroke-dashoffset:0}}
+#loader-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+#loader-logo{font-family:var(--ff-d);font-size:3.8rem;letter-spacing:.12em;background:linear-gradient(135deg,var(--orange2) 0%,var(--rouge) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;animation:lpulse 2s ease-in-out infinite}
+@keyframes lpulse{0%,100%{opacity:1}50%{opacity:.65}}
+#loader-sub{font-family:var(--ff-m);font-size:.5rem;letter-spacing:.28em;color:rgba(237,233,226,.3);text-align:center;text-transform:uppercase}
+#loader-tag{margin-top:2rem;font-family:var(--ff-m);font-size:.58rem;letter-spacing:.35em;text-transform:uppercase;color:rgba(232,52,26,.5);animation:ltagin .8s ease 1s both}
+#loader-pct{margin-top:.8rem;font-family:var(--ff-m);font-size:.62rem;letter-spacing:.18em;color:rgba(232,52,26,.6);animation:ltagin .5s ease .5s both}
+#loader-bar-w{margin-top:1rem;width:150px;height:1px;background:rgba(255,255,255,.07);overflow:hidden}
+#loader-bar{height:100%;width:0;background:linear-gradient(90deg,var(--rouge),var(--orange));animation:lbarfill 3.5s cubic-bezier(.4,0,.2,1) .4s forwards}
+@keyframes ltagin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes lbarfill{from{width:0}to{width:100%}}
+#loader-srv{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);font-family:var(--ff-m);font-size:.55rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(237,233,226,.18);white-space:nowrap;animation:ltagin .8s ease .8s both}
 
-.hidden { display: none; }
-.all-done {
-  text-align: center; padding: 2rem;
-  color: var(--color-text-secondary); font-size: 14px;
-}
+/* NAV */
+nav{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:1000;height:50px;display:flex;align-items:center;gap:1.8rem;padding:0 1.5rem;background:rgba(6,6,10,.7);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px);border:1px solid var(--glass-b);border-radius:100px;transition:background .4s,box-shadow .4s;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+nav.scrolled{background:rgba(6,6,10,.92);box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 0 1px rgba(232,52,26,.12)}
+.nav-logo{font-family:var(--ff-d);font-size:.9rem;letter-spacing:.25em;color:var(--rouge);white-space:nowrap;display:flex;align-items:center;gap:.6rem}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--vert);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+.nav-links{display:flex;gap:.15rem;list-style:none}
+.nav-links a{text-decoration:none;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.38rem .75rem;border-radius:100px;transition:all .25s;white-space:nowrap}
+.nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,.06)}
+.nav-sep{width:1px;height:18px;background:var(--glass-b)}
+@media(max-width:768px){.nav-links{display:none}.nav-sep{display:none}body{cursor:auto}#cur,#cur-ring{display:none}}
 
-.btn-reset {
-  font-size: 12px; color: var(--color-text-secondary);
-  background: none; border: 0.5px solid var(--color-border-tertiary);
-  padding: 4px 12px; border-radius: var(--border-radius-md);
-  cursor: pointer; margin-left: auto; display: block; margin-top: 1rem;
-}
-.btn-reset:hover { color: var(--color-text-primary); border-color: var(--color-border-secondary); }
+/* HERO */
+#hero{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 6rem;overflow:hidden}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(232,52,26,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(232,52,26,.04) 1px,transparent 1px);background-size:70px 70px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%)}
+.hero-chip{display:inline-flex;align-items:center;gap:.6rem;background:rgba(232,52,26,.08);border:1px solid rgba(232,52,26,.22);border-radius:100px;padding:.42rem 1.2rem;font-family:var(--ff-m);font-size:.62rem;letter-spacing:.22em;color:var(--rouge);margin-bottom:2.5rem;opacity:0;animation:fup .9s .3s forwards}
+.hero-t{font-family:var(--ff-d);font-size:clamp(5rem,14vw,12rem);line-height:.88;letter-spacing:.04em;margin-bottom:1.5rem;opacity:0;animation:fup 1s .5s forwards}
+.hero-t .l1{display:block;color:var(--text)}
+.hero-t .l2{display:block;-webkit-text-stroke:3px var(--rouge);color:transparent}
+.hero-sub{font-family:var(--ff-m);font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);margin-bottom:3rem;opacity:0;animation:fup .9s .7s forwards}
+.hero-stats{display:flex;gap:3rem;justify-content:center;flex-wrap:wrap;opacity:0;animation:fup .9s .9s forwards}
+.hs-n{font-family:var(--ff-d);font-size:2.6rem;letter-spacing:.05em;background:linear-gradient(135deg,var(--orange2),var(--rouge));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.hs-l{font-family:var(--ff-m);font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted2);margin-top:.3rem}
+.hero-scroll{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.6rem;opacity:0;animation:fup .8s 1.4s forwards}
+.hero-scroll span{font-family:var(--ff-m);font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted2)}
+.scroll-track{width:1px;height:44px;background:linear-gradient(to bottom,var(--rouge),transparent);position:relative;overflow:hidden}
+.scroll-dot{width:3px;height:10px;background:var(--rouge);position:absolute;left:-1px;top:-10px;border-radius:2px;animation:sdrop 1.8s ease-in-out infinite}
+@keyframes sdrop{0%{top:-10px;opacity:0}15%{opacity:1}85%{opacity:1}100%{top:44px;opacity:0}}
+@keyframes fup{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+
+/* SECTION */
+.sw{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:7rem 2.5rem}
+.sw.n{max-width:880px}
+.hr{position:relative;z-index:2;max-width:1200px;margin:0 auto;height:1px;background:linear-gradient(90deg,transparent,var(--glass-b),transparent)}
+.stag{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--ff-m);font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--rouge);margin-bottom:1rem}
+.stag::before{content:'';width:18px;height:1px;background:var(--rouge)}
+.st{font-family:var(--ff-d);font-size:clamp(2.8rem,6vw,5.5rem);line-height:1;letter-spacing:.04em;color:var(--text);margin-bottom:3rem}
+.st em{font-style:normal;background:linear-gradient(135deg,var(--orange2),var(--rouge));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+p{color:var(--muted);font-size:.95rem;margin-bottom:1.4rem;line-height:1.8}
+p strong{color:var(--text);font-weight:500}
+
+/* GLASS CARD */
+.gc{background:var(--glass);border:1px solid var(--glass-b);border-radius:20px;padding:2rem;position:relative;overflow:hidden;transition:background .3s,border-color .3s}
+.gc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent)}
+.gc:hover{background:var(--glass-h);border-color:rgba(232,52,26,.2)}
+
+/* PULL QUOTE */
+.pq{border-left:2px solid var(--rouge);padding:1.2rem 2rem;margin:3rem 0;font-family:var(--ff-d);font-size:clamp(1.4rem,2.5vw,2rem);letter-spacing:.04em;color:var(--text);line-height:1.3;position:relative}
+.pq::before{content:'"';position:absolute;top:-.8rem;left:.5rem;font-size:5rem;font-family:var(--ff-d);color:rgba(232,52,26,.1);line-height:1;pointer-events:none}
+
+/* CHARS CARDS — FLIP */
+.chars-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem;margin-top:3rem}
+@media(max-width:700px){.chars-grid{grid-template-columns:1fr}}
+.cc{height:580px;perspective:1400px;cursor:none}
+.cc-i{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.4,.2,.2,1)}
+.cc.flip .cc-i{transform:rotateY(180deg)}
+.cc-f,.cc-b{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;overflow:hidden;border:1px solid var(--glass-b)}
+.cc-f{background:var(--glass);display:flex;flex-direction:column;justify-content:flex-end}
+.cc-aura{position:absolute;inset:0;opacity:.15;transition:opacity .5s}
+.cc:hover .cc-aura{opacity:.28}
+.cc-init{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--ff-d);font-size:11rem;letter-spacing:.05em;color:rgba(255,255,255,.025);user-select:none;line-height:1}
+.cc-glow{position:absolute;bottom:0;left:0;right:0;height:80%;background:linear-gradient(to top,rgba(6,6,10,.98) 0%,rgba(6,6,10,.6) 55%,transparent 100%)}
+.cc-top{position:absolute;top:1.2rem;right:1.2rem;z-index:2}
+.cc-badge{font-family:var(--ff-m);font-size:.54rem;letter-spacing:.18em;padding:.28rem .7rem;border-radius:100px;border:1px solid rgba(255,255,255,.12);background:rgba(6,6,10,.65);color:var(--muted)}
+.cc-fc{position:relative;z-index:2;padding:1.8rem}
+.cc-alias{font-family:var(--ff-m);font-size:.62rem;letter-spacing:.22em;color:var(--rouge);margin-bottom:.3rem}
+.cc-name{font-family:var(--ff-d);font-size:2rem;letter-spacing:.06em;color:var(--text);line-height:1.1;margin-bottom:.6rem}
+.cc-roles{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem}
+.cc-role{display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;color:var(--muted2);border:1px solid rgba(255,255,255,.07);padding:.2rem .6rem;border-radius:100px;background:rgba(6,6,10,.5)}
+.cc-hint{position:absolute;bottom:1.4rem;right:1.4rem;z-index:2;width:30px;height:30px;border-radius:50%;border:1px solid rgba(232,52,26,.35);background:rgba(232,52,26,.08);display:flex;align-items:center;justify-content:center;color:var(--rouge);font-size:.85rem;transition:all .3s}
+.cc:hover .cc-hint{background:rgba(232,52,26,.18);border-color:var(--rouge)}
+/* BACK */
+.cc-b{background:rgba(8,8,14,.97);transform:rotateY(180deg);padding:1.8rem;display:flex;flex-direction:column;border:1px solid rgba(232,52,26,.16)}
+.cc-b::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--rouge),transparent)}
+.cc-bh{border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:1rem;margin-bottom:1.2rem}
+.cc-bn{font-family:var(--ff-d);font-size:1.4rem;letter-spacing:.06em;color:var(--text);margin-bottom:.2rem}
+.cc-bm{font-family:var(--ff-m);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--rouge)}
+.cc-bb{flex:1;overflow-y:auto;padding-right:.4rem;scrollbar-width:thin;scrollbar-color:rgba(232,52,26,.15) transparent}
+.cc-bb p{font-size:.82rem;line-height:1.75;color:rgba(237,233,226,.58);margin-bottom:.9rem}
+.cc-bb p strong{color:rgba(237,233,226,.9)}
+.cc-bt{display:inline-block;font-family:var(--ff-m);font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;background:rgba(232,52,26,.08);color:var(--rouge);border:1px solid rgba(232,52,26,.2);padding:.25rem .7rem;border-radius:100px;margin-bottom:1rem}
+.cc-close{margin-top:.8rem;font-family:var(--ff-m);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted2);background:none;border:1px solid rgba(255,255,255,.07);padding:.5rem 1rem;border-radius:100px;cursor:none;transition:all .3s;text-align:center;width:100%}
+.cc-close:hover{color:var(--text);border-color:rgba(255,255,255,.18)}
+/* stat bars in back */
+.stat-row{display:grid;grid-template-columns:100px 1fr 26px;align-items:center;gap:8px;margin-bottom:7px}
+.stat-lbl{font-family:var(--ff-m);font-size:.56rem;letter-spacing:.05em;color:var(--muted2);text-transform:uppercase}
+.stat-track{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.stat-fill{height:100%;border-radius:2px}
+.sf-r{background:linear-gradient(90deg,var(--rouge2),var(--rouge))}
+.sf-o{background:linear-gradient(90deg,#b04800,var(--orange))}
+.sf-y{background:linear-gradient(90deg,#b08900,var(--jaune))}
+.sf-g{background:linear-gradient(90deg,#1a7800,var(--vert))}
+.stat-val{font-family:var(--ff-m);font-size:.58rem;color:var(--muted2);text-align:right}
+/* tags */
+.tags-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.8rem}
+.tag{font-family:var(--ff-m);font-size:.5rem;padding:3px 7px;border:1px solid rgba(255,255,255,.09);color:rgba(237,233,226,.4);text-transform:uppercase;letter-spacing:.07em;border-radius:4px}
+/* vice badges */
+.vices{display:flex;flex-wrap:wrap;gap:5px;border-top:1px solid rgba(255,255,255,.05);padding-top:.8rem;margin-top:.5rem}
+.vice{font-family:var(--ff-m);font-size:.5rem;padding:3px 9px;background:rgba(232,52,26,.1);border:1px solid rgba(232,52,26,.18);color:rgba(255,130,110,.85);text-transform:uppercase;letter-spacing:.08em;border-radius:4px}
+/* conn list */
+.conn-item{font-size:.78rem;color:rgba(237,233,226,.55);line-height:1.7;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.conn-item:last-child{border:none}
+.conn-item strong{color:var(--text)}
+
+/* LORE GRID */
+.lore-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;margin-top:2.5rem}
+.lg-card{padding:2rem;border-radius:18px;border:1px solid var(--glass-b);background:var(--glass);position:relative;overflow:hidden;transition:border-color .3s}
+.lg-card:hover{border-color:rgba(255,255,255,.2)}
+.lg-acc{position:absolute;top:0;left:0;width:100%;height:2px}
+.lg-n{font-family:var(--ff-d);font-size:4rem;line-height:1;opacity:.06;margin-bottom:.8rem;color:white}
+.lg-title{font-family:var(--ff-d);font-size:1.3rem;letter-spacing:.04em;color:var(--text);margin-bottom:.25rem}
+.lg-sub{font-family:var(--ff-m);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem}
+.lg-card p{font-size:.82rem;color:var(--muted);margin:0}
+
+/* TIMELINE */
+.tl{position:relative;padding-left:2rem;margin-top:3rem}
+.tl::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,var(--rouge),rgba(232,52,26,.05))}
+.tl-item{position:relative;padding:0 0 2.5rem 2.5rem}
+.tl-item::before{content:'';position:absolute;left:-5px;top:.5rem;width:11px;height:11px;border-radius:50%;background:var(--bg);border:2px solid var(--rouge);box-shadow:0 0 12px rgba(232,52,26,.5)}
+.tl-item.big::before{width:16px;height:16px;left:-7px;background:var(--rouge);border-color:var(--orange)}
+.tl-time{font-family:var(--ff-m);font-size:.62rem;letter-spacing:.18em;color:var(--rouge);margin-bottom:.3rem;text-transform:uppercase}
+.tl-time.y{color:var(--orange)}
+.tl-title{font-family:var(--ff-d);font-size:1.6rem;letter-spacing:.04em;color:var(--text);margin-bottom:.4rem}
+.tl-text{font-size:.85rem;color:var(--muted);line-height:1.78;margin:0}
+
+/* OBJECTIFS */
+.obj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:3rem}
+@media(max-width:850px){.obj-grid{grid-template-columns:1fr}}
+.oc{border-radius:22px;border:1px solid var(--glass-b);background:var(--glass);padding:2.2rem 2rem;position:relative;overflow:hidden;transition:border-color .3s}
+.oc:hover{border-color:var(--ac)}
+.oc.t1{--ac:var(--rouge)}.oc.t2{--ac:var(--orange)}.oc.t3{--ac:var(--jaune)}
+.oc-num{font-family:var(--ff-d);font-size:5rem;line-height:1;color:var(--ac);opacity:.12;margin-bottom:.8rem}
+.oc-pill{display:inline-block;font-family:var(--ff-m);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;border:1px solid var(--ac);color:var(--ac);padding:.25rem .7rem;border-radius:100px;margin-bottom:.8rem;background:rgba(255,255,255,.02)}
+.oc-title{font-family:var(--ff-d);font-size:1.3rem;letter-spacing:.04em;color:var(--text);line-height:1.2;margin-bottom:1.2rem}
+.oc-list{list-style:none}
+.oc-list li{padding:.55rem 0;border-top:1px solid rgba(255,255,255,.05);font-size:.82rem;color:var(--muted);display:flex;gap:.7rem;align-items:flex-start;line-height:1.65}
+.oc-list li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--ac);flex-shrink:0;margin-top:.55em}
+
+/* ACT GRID */
+.act-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:2.5rem}
+@media(max-width:700px){.act-grid{grid-template-columns:1fr}}
+.act-head{font-family:var(--ff-m);font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;margin-bottom:1.2rem;display:flex;align-items:center;gap:.6rem}
+.act-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ai{padding:1.2rem;border-radius:14px;border:1px solid var(--glass-b);background:var(--glass);margin-bottom:.8rem;transition:border-color .3s,background .3s}
+.ai:hover{border-color:rgba(255,255,255,.14);background:var(--glass-h)}
+.ai h4{font-family:var(--ff-d);font-size:1rem;letter-spacing:.04em;color:var(--text);margin-bottom:.3rem}
+.ai p{font-size:.8rem;color:var(--muted);margin:0;line-height:1.65}
+
+/* CONNEXIONS */
+.city-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:2.5rem}
+.ccard{padding:1.5rem;border-radius:16px;border:1px solid var(--glass-b);background:var(--glass);border-left:2px solid rgba(232,52,26,.3);transition:border-color .3s}
+.ccard:hover{border-left-color:var(--rouge)}
+.ccard-lbl{font-family:var(--ff-m);font-size:.52rem;letter-spacing:.22em;color:var(--orange);text-transform:uppercase;margin-bottom:.4rem}
+.ccard-name{font-family:var(--ff-d);font-size:1.2rem;letter-spacing:.06em;color:var(--text);margin-bottom:.5rem}
+.ccard p{font-size:.78rem;color:var(--muted);line-height:1.65;margin:0}
+.ccard-role{font-family:var(--ff-m);font-size:.5rem;color:var(--rouge);text-transform:uppercase;letter-spacing:.15em;margin-top:.5rem;display:block}
+
+/* IDENTITY GRID */
+.id-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+@media(max-width:700px){.id-grid{grid-template-columns:1fr 1fr}}
+.id-cell{padding:1.6rem 1.2rem;border-radius:18px;border:1px solid var(--glass-b);background:var(--glass);text-align:center;transition:all .35s cubic-bezier(.34,1.56,.64,1)}
+.id-cell:hover{background:var(--glass-h);border-color:rgba(232,52,26,.22)}
+.id-g{font-family:var(--ff-d);font-size:2rem;letter-spacing:.04em;background:linear-gradient(135deg,var(--orange2),var(--rouge));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.7rem;line-height:1}
+.id-cell h4{font-family:var(--ff-m);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text);margin-bottom:.35rem}
+.id-cell p{font-size:.76rem;color:var(--muted2);margin:0}
+
+/* CONCLUSION */
+.conc-wrap{position:relative;z-index:2;text-align:center;padding:8rem 2.5rem;max-width:780px;margin:0 auto}
+.conc-ring{width:86px;height:86px;border-radius:50%;border:1px solid rgba(232,52,26,.28);display:flex;align-items:center;justify-content:center;margin:0 auto 3rem;position:relative}
+.conc-ring::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(232,52,26,.1)}
+.conc-ring::after{content:'';position:absolute;inset:-16px;border-radius:50%;border:1px solid rgba(232,52,26,.05)}
+.conc-ring-t{font-family:var(--ff-m);font-size:.56rem;letter-spacing:.1em;color:var(--rouge);text-align:center;line-height:1.6}
+
+/* FOOTER */
+footer{position:relative;z-index:2;border-top:1px solid var(--glass-b);padding:2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.fl{font-family:var(--ff-m);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted2)}
+.fr{font-family:var(--ff-m);font-size:.6rem;letter-spacing:.15em;color:var(--rouge);opacity:.65}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+.rv.v{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
 </style>
+</head>
+<body>
 
-<div class="wrap">
+<div id="cur"></div>
+<div id="cur-ring"></div>
+<div id="orbs"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
 
-<div class="cat-tabs" id="cats"></div>
-
-<div class="progress-label">
-  <span id="prog-text">0 / 0 éléments complétés</span>
-  <span id="prog-pct">0%</span>
+<!-- LOADER -->
+<div id="loader">
+  <div id="loader-center">
+    <div id="loader-ring">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="lg-loader" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#F5A034"/>
+            <stop offset="50%" stop-color="#E8341A"/>
+            <stop offset="100%" stop-color="#C0200E"/>
+          </linearGradient>
+        </defs>
+        <circle cx="100" cy="100" r="90" class="lr-track"/>
+        <circle cx="100" cy="100" r="90" class="lr-main" style="transform-origin:100px 100px"/>
+      </svg>
+      <div id="loader-inner">
+        <div id="loader-logo">DK</div>
+        <div id="loader-sub">Dirt<br>Krew</div>
+      </div>
+    </div>
+    <div id="loader-tag">Bikelife · Rue · Hiphop</div>
+    <div id="loader-pct">0%</div>
+    <div id="loader-bar-w"><div id="loader-bar"></div></div>
+  </div>
+  <div id="loader-srv">Bloc Libre · Intro WL · Dossier RP · 2026</div>
 </div>
-<div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
 
-<div id="content"></div>
-<button class="btn-reset" onclick="resetAll()">Tout réinitialiser</button>
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo"><div class="nav-dot"></div>BLOC LIBRE</div>
+  <div class="nav-sep"></div>
+  <ul class="nav-links">
+    <li><a href="#membres">Membres</a></li>
+    <li><a href="#lore">Lore</a></li>
+    <li><a href="#bascule">Bascule</a></li>
+    <li><a href="#facade">Façade</a></li>
+    <li><a href="#connexions">Réseau</a></li>
+    <li><a href="#objectifs">Objectifs</a></li>
+    <li><a href="#activites">Activités</a></li>
+    <li><a href="#identite">Identité</a></li>
+    <li><a href="#conclusion">Fin</a></li>
+  </ul>
+  <div class="nav-sep"></div>
+  <div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.18em;color:var(--muted2);white-space:nowrap">Intro WL</div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-chip"><div style="width:6px;height:6px;border-radius:50%;background:var(--vert);animation:pulse 2s infinite"></div>Intro WL · Dossier RP · 2026</div>
+  <h1 class="hero-t">
+    <span class="l1">BLOC</span>
+    <span class="l2">LIBRE</span>
+  </h1>
+  <div class="hero-sub">DirtKrew · Bikelife · Columbus, Ohio · Petites Frappes</div>
+  <div class="hero-stats">
+    <div><div class="hs-n">4</div><div class="hs-l">Joueurs au start</div></div>
+    <div><div class="hs-n">0</div><div class="hs-l">Machine en stock</div></div>
+    <div><div class="hs-n">100%</div><div class="hs-l">Départ légal</div></div>
+  </div>
+  <div class="hero-scroll"><span>Défiler</span><div class="scroll-track"><div class="scroll-dot"></div></div></div>
+</section>
+
+<div class="hr"></div>
+
+<!-- MEMBRES -->
+<div id="membres" style="padding:7rem 2.5rem;position:relative;z-index:2">
+<div style="max-width:1200px;margin:0 auto">
+  <div class="stag rv">Identités</div>
+  <h2 class="st rv d1">Les <em>Têtes</em> du Groupe</h2>
+  <p class="rv d2" style="max-width:520px">Quatre riders du bitume liés depuis l'enfance. Cliquez sur chaque carte pour révéler leur dossier complet.</p>
+
+  <div class="chars-grid">
+
+    <!-- NEARYZ -->
+    <div class="cc rv" onclick="this.classList.toggle('flip')">
+      <div class="cc-i">
+        <div class="cc-f">
+          <div class="cc-aura" style="background:radial-gradient(ellipse at 50% 20%,rgba(232,52,26,.35),transparent 70%)"></div>
+          <div class="cc-init">NR</div>
+          <div class="cc-glow"></div>
+          <div class="cc-top"><div class="cc-badge">22 ans</div></div>
+          <div class="cc-fc">
+            <div class="cc-alias">"Nearyz" · Ryan Callahan</div>
+            <div class="cc-name">NEARYZ</div>
+            <div class="cc-roles">
+              <span class="cc-role">Leader de facto</span>
+              <span class="cc-role">Ex-mécanicien</span>
+              <span class="cc-role">Dealer occasionnel</span>
+            </div>
+          </div>
+          <div class="cc-hint">↺</div>
+        </div>
+        <div class="cc-b">
+          <div class="cc-bh">
+            <div class="cc-bn">Ryan "Nearyz" Callahan</div>
+            <div class="cc-bm">22 ans · Caucasien · Columbus, Ohio</div>
+          </div>
+          <div class="cc-bt">Leader de facto · Mécanique · Motocross</div>
+          <div class="cc-bb">
+            <p><strong>Profil.</strong> Fils d'un mécanicien alcoolique, Ryan a grandi entre le garage de son père et les terrains vagues du quartier. <strong>Talent naturel pour la mécanique</strong>, il réparait des motos abandonnées dès l'adolescence pour les revendre. Charismatique, grande gueule, mais aussi le premier à dépanner les autres. Son problème : il ne sait pas dire non. À personne.</p>
+            <p><strong>Élément déclencheur.</strong> Son père a contracté une dette auprès d'un receleur local pour rembourser son garage. Ryan prend la dette à sa charge — <strong>8 000$</strong>. Pour rembourser vite, il accepte d'acheminer des pièces volées sans poser de questions. Une livraison à moto, c'est anodin… jusqu'à ce que le contenu change.</p>
+            <p><strong>Situation moto.</strong> Possédait une YZ250F quasi neuve. Mise en garantie pour payer le loyer de son père. Roule sur une vieille KX125 rouillée empruntée à son oncle — honte secrète pour quelqu'un dont l'identité tourne autour des bécanes.</p>
+
+            <div style="margin:.8rem 0 .5rem;font-family:var(--ff-m);font-size:.55rem;letter-spacing:.22em;color:var(--muted2);text-transform:uppercase">Traits de personnalité</div>
+            <div class="stat-row"><span class="stat-lbl">Charisme</span><div class="stat-track"><div class="stat-fill sf-r" style="width:90%"></div></div><span class="stat-val">9</span></div>
+            <div class="stat-row"><span class="stat-lbl">Impulsivité</span><div class="stat-track"><div class="stat-fill sf-o" style="width:70%"></div></div><span class="stat-val">7</span></div>
+            <div class="stat-row"><span class="stat-lbl">Loyauté</span><div class="stat-track"><div class="stat-fill sf-g" style="width:85%"></div></div><span class="stat-val">8</span></div>
+            <div class="stat-row"><span class="stat-lbl">Prudence</span><div class="stat-track"><div class="stat-fill sf-r" style="width:30%"></div></div><span class="stat-val">3</span></div>
+            <div class="stat-row"><span class="stat-lbl">Ambition</span><div class="stat-track"><div class="stat-fill sf-y" style="width:65%"></div></div><span class="stat-val">6</span></div>
+
+            <div style="margin:.8rem 0 .5rem;font-family:var(--ff-m);font-size:.55rem;letter-spacing:.22em;color:var(--muted2);text-transform:uppercase">Style & Apparence</div>
+            <div class="tags-row">
+              <span class="tag">Carhartt WIP délavé</span><span class="tag">Nike Air Max 95</span><span class="tag">Casquette A-COLD-WALL</span><span class="tag">Tatouage piston épaule G</span><span class="tag">Cheveux courts, barbe 3j</span><span class="tag">Huile sous les ongles</span>
+            </div>
+
+            <div style="margin:.8rem 0 .5rem;font-family:var(--ff-m);font-size:.55rem;letter-spacing:.22em;color:var(--muted2);text-transform:uppercase">Connexions</div>
+            <div class="conn-item"><strong>Yurisqua</strong> — meilleur ami depuis le collège, l'a initié à la moto freestyle</div>
+            <div class="conn-item"><strong>Tanjawi</strong> — lui doit une faveur après une nuit où Tan lui a évité la prison</div>
+            <div class="conn-item"><strong>Thenec</strong> — relation ambivalente, l'admire et le méfie à parts égales</div>
+            <div class="conn-item"><strong>Marcus Reeves (PNJ)</strong> — receleur qui tient la dette de son père</div>
+
+            <div class="vices"><span class="vice">Alcool (bière + whisky)</span><span class="vice">Weed quotidien</span><span class="vice">Jeux d'argent</span></div>
+          </div>
+          <button class="cc-close" onclick="event.stopPropagation();this.closest('.cc').classList.remove('flip')">↺ Retourner</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- YURISQUA -->
+    <div class="cc rv d1" onclick="this.classList.toggle('flip')">
+      <div class="cc-i">
+        <div class="cc-f">
+          <div class="cc-aura" style="background:radial-gradient(ellipse at 50% 20%,rgba(57,255,20,.2),transparent 70%)"></div>
+          <div class="cc-init">YS</div>
+          <div class="cc-glow"></div>
+          <div class="cc-top"><div class="cc-badge">23 ans</div></div>
+          <div class="cc-fc">
+            <div class="cc-alias">"Yurisqua" · Yuri Maslow</div>
+            <div class="cc-name">YURISQUA</div>
+            <div class="cc-roles">
+              <span class="cc-role">Rider le plus technique</span>
+              <span class="cc-role">Semi-influenceur</span>
+              <span class="cc-role">Fauché chronique</span>
+            </div>
+          </div>
+          <div class="cc-hint">↺</div>
+        </div>
+        <div class="cc-b">
+          <div class="cc-bh">
+            <div class="cc-bn">Yuri "Yurisqua" Maslow</div>
+            <div class="cc-bm">23 ans · Caucasien (origines russes) · Columbus, Ohio</div>
+          </div>
+          <div class="cc-bt">Rider Elite · Semi-influenceur · Freestyle MX</div>
+          <div class="cc-bb">
+            <p><strong>Profil.</strong> Petit-fils d'immigrants russes, Yuri a grandi avec la pression de "faire quelque chose de sa vie". Il a tout misé sur le freestyle motocross comme voie vers la célébrité — chaîne YouTube, Instagram, quelques sponsors locaux. <strong>Techniquement le meilleur rider du groupe</strong>, mais l'argent ne suit pas. Ses 40k abonnés ne payent pas le loyer. Obsédé par l'image, paranoïaque à l'idée de paraître poor.</p>
+            <p><strong>Élément déclencheur.</strong> Une marque de streetwear lui propose un contrat de sponsoring — mais exige qu'il <strong>gonfle artificiellement ses stats</strong> via un réseau de bots payants géré par un prestataire louche. Ce prestataire est en réalité une façade pour blanchir de l'argent. Yuri devient, sans le savoir d'abord, un maillon d'un réseau financier.</p>
+            <p><strong>Situation moto.</strong> A une <strong>KTM 450 SX-F</strong> impeccable — sa fierté, payée à crédit avec 18 mois de retard. La caméra embarquée sur son casque vaut plus cher que la moto. Il refuserait de vendre la moto même mourant de faim.</p>
+
+            <div style="margin:.8rem 0 .5rem;font-family:var(--ff-m);font-size:.55rem;letter-spacing:.22em;color:var(--muted2);text-transform:uppercase">Traits de personnalité</div>
+            <div class="stat-row"><span class="stat-lbl">Ego</span><div class="stat-track"><div class="stat-fill sf-o" style="width:95%"></div></div><span class="stat-val">9</span></div>
+            <div class="stat-row"><span class="stat-lbl">Rider</span><div class="stat-track"><div class="stat-fill sf-g" style="width:95%"></div></div><span class="stat-val">9</span></div>
+            <div class="stat-row"><span class="stat-lbl">Loyauté</span><div class="stat-track"><div class="stat-fill sf-r" style="width:50%"></div></div><span class="stat-val">5</span></div>
+            <div class="stat-row"><span class="stat-lbl">Impulsivité</span><div class="stat-track"><div class="stat-fill sf-o" style="width:60%"></div></div><span class="stat-val">6</span></div>
+            <div class="stat-row"><span class="stat-lbl">Paranoia</span><div class="stat-track"><div class="stat-fill sf-r" style="width:75%"></div></div><span class="stat-val">7</span></div>
+
+            <div style="margin:.8rem 0 .5rem;font-family:var(--ff-m);font-size:.55rem;letter-spacing:.22em;color:var(--muted2);text-transform:uppercase">Style & Apparence</div>
+            <div class="tags-row">
+              <span class="tag">Essentials Fear of God</span><span class="tag">New Balance 990v6</span><span class="tag">Cheveux décolorés platine</span><span class="tag">Boucle d'oreille or</span><span class="tag">Téléphone toujours en main</span><span class="tag">GoPro ou stab sur lui</span>
+            </div>
+
+            <div style="margin:.8rem 0 .5rem;font-family:var(--ff-m);font-size:.55rem;letter-spacing:.22em;color:var(--muted2);text-transform:uppercase">Connexions</div>
+            <div class="conn-item"><strong>Nearyz</strong> — frère de cœur, l'a initié au freestyle adolescent</div>
+            <div class="conn-item"><strong>Thenec</strong> — rivalité sourde, jaloux de son argent facile</div>
+            <div class="conn-item"><strong>Tanjawi</strong> — admiration mutuelle, Tan lui a sauvé plusieurs fois la mise légalement</div>
+            <div class="conn-item"><strong>Dmitri Maslow (PNJ, oncle)</strong> — figure d'autorité qu'il veut impressionner à tout prix</div>
+
+            <div class="vices"><span class="vice">Coke (occasionnel → fréquent)</span><span class="vice">Dépenses compulsives</span><span class="vice">Alcool mondain</span></div>
+          </div>
+          <button class="cc-close" onclick="event.stopPropagation();this.closest('.cc').classList.remove('flip')">↺ Retourner</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TANJAWI -->
+    <div class="cc rv d2" onclick="this.classList.toggle('flip')">
+      <div class="cc-i">
+        <div class="cc-f">
+          <div class="cc-aura" style="background:radial-gradient(ellipse at 50% 20%,rgba(245,194,52,.22),transparent 70%)"></div>
+          <div class="cc-init">TJ</div>
+          <div class="cc-glow"></div>
+          <div class="cc-top"><div class="cc-badge">24 ans</div></div>
+          <div class="cc-fc">
+            <div class="cc-alias">"Tanjawi" · Tanner Jablonski</div>
+            <div class="cc-name">TANJAWI</div>
+            <div class="cc-roles">
+              <span class="cc-role">Cerveau du groupe</span>
+              <span class="cc-role">Façade légale solide</span>
+              <span class="cc-role">Double vie</span>
+            </div>
+          </div>
+          <div class="cc-hint">↺</div>
+        </div>
+        <div class="cc-b">
+          <div class="cc-bh">
+            <div class="cc-bn">Tanner "Tanjawi" Jablonski</div>
+            <div class="cc-bm">24 ans · Caucasien (origines polonaises) · Columbus, Ohio</div>
+          </div>
+          <div class="cc-bt">Stratège · Blanchiment · DirtKrew fondateur</div>
+          <div class="cc-bb">
+            <p><strong>Profil.</strong> Le plus discret du groupe. Tanner a fait deux ans de droit avant d'abandonner — assez pour savoir comment fonctionne le système, pas assez pour s'y intégrer légalement. C'est lui qui a eu l'idée de créer l'association <strong>"DirtKrew"</strong>. Sur le papier, entrepreneur. Dans les coulisses, il gère les flux d'argent avec une précision froide. Ne parle pas pour rien.</p>
+            <p><strong>Élément déclencheur.</strong> Il utilise l'asso pour blanchir de petites sommes depuis des mois — <strong>rien de visible, rien de traçable</strong>. Mais un comptable de la ville remarque des irrégularités et contacte discrètement la mairie. Tanner doit maintenant gérer une menace silencieuse sans que les autres sachent à quel point il les a exposés.</p>
+            <p><strong>Situation moto.</strong> N'a <strong>plus de moto personnelle</strong> — la sienne a été saisie lors d'un contrôle fiscal il y a 8 mois, enregistrée au nom de l'asso. Conduit un van utilitaire blanc pour "les événements". Gère les motos des autres comme si c'étaient les siennes.</p>
+
+            <div style="margin:.8rem 0 .5rem;font-family:var(--ff-m);font-size:.55rem;letter-spacing:.22em;color:var(--muted2);text-transform:uppercase">Traits de personnalité</div>
+            <div class="stat-row"><span class="stat-lbl">Intelligence</span><div class="stat-track"><div class="stat-fill sf-g" style="width:95%"></div></div><span class="stat-val">9</span></div>
+            <div class="stat-row"><span class="stat-lbl">Froideur</span><div class="stat-track"><div class="stat-fill sf-r" style="width:88%"></div></div><span class="stat-val">8</span></div>
+            <div class="stat-row"><span class="stat-lbl">Loyauté</span><div class="stat-track"><div class="stat-fill sf-y" style="width:40%"></div></div><span class="stat-val">4</span></div>
+            <div class="stat-row"><span class="stat-lbl">Impulsivité</span><div class="stat-track"><div class="stat-fill sf-r" style="width:20%"></div></div><span class="stat-val">2</span></div>
+            <div class="stat-row"><span class="stat-lbl">Manipulation</span><div class="stat-track"><div class="stat-fill sf-o" style="width:92%"></div></div><span class="stat-val">9</span></div>
+
+            <div style="margin:.8rem 0 .5rem;font-family:var(--ff-m);font-size:.55rem;letter-spacing:.22em;color:var(--muted2);text-transform:uppercase">Style & Apparence</div>
+            <div class="tags-row">
+              <span class="tag">Stone Island discret</span><span class="tag">Adidas Samba OG</span><span class="tag">Montre Seiko vintage</span><span class="tag">Cheveux noirs coiffés</span><span class="tag">Moleskine sur lui</span><span class="tag">Regard froid, sourire rare</span>
+            </div>
+
+            <div style="margin:.8rem 0 .5rem;font-family:var(--ff-m);font-size:.55rem;letter-spacing:.22em;color:var(--muted2);text-transform:uppercase">Connexions</div>
+            <div class="conn-item"><strong>Nearyz</strong> — lui doit une faveur (a évité une arrestation), s'en sert subtilement</div>
+            <div class="conn-item"><strong>Yurisqua</strong> — l'apprécie pour son image, s'en méfie pour son impulsivité</div>
+            <div class="conn-item"><strong>Thenec</strong> — relation tendue, Thenec sait des choses sur lui</div>
+            <div class="conn-item"><strong>Kevin Strahl (PNJ, comptable)</strong> — menace latente, veut être acheté ou éliminé</div>
+
+            <div class="vices"><span class="vice">Contrôle total (en apparence)</span><span class="vice">Escorts discrets</span><span class="vice">Boire seul, la nuit</span></div>
+          </div>
+          <button class="cc-close" onclick="event.stopPropagation();this.closest('.cc').classList.remove('flip')">↺ Retourner</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- THENEC -->
+    <div class="cc rv d3" onclick="this.classList.toggle('flip')">
+      <div class="cc-i">
+        <div class="cc-f">
+          <div class="cc-aura" style="background:radial-gradient(ellipse at 50% 20%,rgba(232,112,26,.28),transparent 70%)"></div>
+          <div class="cc-init">TC</div>
+          <div class="cc-glow"></div>
+          <div class="cc-top"><div class="cc-badge">21 ans</div></div>
+          <div class="cc-fc">
+            <div class="cc-alias">"Thenec" · Theo Crawford</div>
+            <div class="cc-name">THENEC</div>
+            <div class="cc-roles">
+              <span class="cc-role">Wildcard du groupe</span>
+              <span class="cc-role">Chercheur d'adrénaline</span>
+              <span class="cc-role">Artiste graffiti</span>
+            </div>
+          </div>
+          <div class="cc-hint">↺</div>
+        </div>
+        <div class="cc-b">
+          <div class="cc-bh">
+            <div class="cc-bn">Theo "Thenec" Crawford</div>
+            <div class="cc-bm">21 ans · Caucasien (origines irlandaises) · Columbus, Ohio</div>
+          </div>
+          <div class="cc-bt">Wildcard · Graffiteur · Adrénaline</div>
+          <div class="cc-bb">
+            <p><strong>Profil.</strong> Le plus jeune, le plus imprévisible. Theo a débarqué dans le groupe par Nearyz — son voisin de palier — à 16 ans, en poussant une moto qui n'était pas la sienne. <strong>Graffeur reconnu localement</strong> sous le blaze "THENEC", il tague les rampes, les tunnels, les passages sous-voies. Artistiquement doué, émotionnellement instable. Le genre à tenter un trick qu'il n'a jamais fait devant une caméra juste pour l'image.</p>
+            <p><strong>Élément déclencheur.</strong> En taguant un entrepôt la nuit, il <strong>tombe sur un deal qui tourne mal</strong> — deux gars d'un crew adverse et un intermédiaire inconnu. Il filme sans le vouloir sur son téléphone. Maintenant il détient une vidéo qui vaut très cher, dans les deux sens du terme.</p>
+            <p><strong>Situation moto.</strong> N'a <strong>jamais eu de moto à lui</strong>. Il emprunte, il squatte, il négocie. Son truc c'est les quads — il a accès à un <strong>Yamaha Grizzly 700</strong> planqué dans un box appartenant à son grand frère dealer (absent, en taule). Le quad n'est pas légal sur route. Il s'en fout.</p>
+
+            <div style="margin:.8rem 0 .5rem;font-family:var(--ff-m);font-size:.55rem;letter-spacing:.22em;color:var(--muted2);text-transform:uppercase">Traits de personnalité</div>
+            <div class="stat-row"><span class="stat-lbl">Créativité</span><div class="stat-track"><div class="stat-fill sf-y" style="width:95%"></div></div><span class="stat-val">9</span></div>
+            <div class="stat-row"><span class="stat-lbl">Impulsivité</span><div class="stat-track"><div class="stat-fill sf-r" style="width:88%"></div></div><span class="stat-val">8</span></div>
+            <div class="stat-row"><span class="stat-lbl">Courage</span><div class="stat-track"><div class="stat-fill sf-o" style="width:92%"></div></div><span class="stat-val">9</span></div>
+            <div class="stat-row"><span class="stat-lbl">Loyauté</span><div class="stat-track"><div class="stat-fill sf-g" style="width:75%"></div></div><span class="stat-val">7</span></div>
+            <div class="stat-row"><span class="stat-lbl">Stabilité</span><div class="stat-track"><div class="stat-fill sf-r" style="width:20%"></div></div><span class="stat-val">2</span></div>
+
+            <div style="margin:.8rem 0 .5rem;font-family:var(--ff-m);font-size:.55rem;letter-spacing:.22em;color:var(--muted2);text-transform:uppercase">Style & Apparence</div>
+            <div class="tags-row">
+              <span class="tag">Dickies larges taggués</span><span class="tag">Vans Old Skool tachés peinture</span><span class="tag">Hoodie Supreme délavé</span><span class="tag">Bagues argent multiples</span><span class="tag">Tatouages avant-bras</span><span class="tag">Yeux clairs, regard intense</span>
+            </div>
+
+            <div style="margin:.8rem 0 .5rem;font-family:var(--ff-m);font-size:.55rem;letter-spacing:.22em;color:var(--muted2);text-transform:uppercase">Connexions</div>
+            <div class="conn-item"><strong>Nearyz</strong> — figure fraternelle, le seul à qui il obéit vraiment</div>
+            <div class="conn-item"><strong>Tanjawi</strong> — sait des choses sur lui (dette fiscale), tension latente</div>
+            <div class="conn-item"><strong>Yurisqua</strong> — amitié réelle, respect mutuel pour leurs arts respectifs</div>
+            <div class="conn-item"><strong>Danny Crawford (PNJ, grand frère)</strong> — en prison, ressource et boulet à la fois</div>
+
+            <div class="vices"><span class="vice">Adrénaline compulsive</span><span class="vice">Weed + lean</span><span class="vice">Sexualité impulsive</span><span class="vice">Insomnies chroniques</span></div>
+          </div>
+          <button class="cc-close" onclick="event.stopPropagation();this.closest('.cc').classList.remove('flip')">↺ Retourner</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
+</div>
+
+<div class="hr"></div>
+
+<!-- LORE -->
+<section id="lore">
+<div class="sw">
+  <div class="stag rv">Lore & Genèse</div>
+  <h2 class="st rv d1">DirtKrew · <em>Les Origines</em></h2>
+  <p class="rv d2">Ils ne se sont pas rencontrés sur un serveur. Ils se sont trouvés sur un terrain vague transformé en piste improvisée entre 8 et 12 ans. Des étés entiers à réparer, rouler, tomber, recommencer. Ce que les autres appellent une passion, eux appellent ça une langue commune.</p>
+
+  <div class="pq rv">"On s'est pas choisis. On a poussé ensemble, comme des mauvaises herbes entre les dalles."</div>
+
+  <div class="lore-grid rv">
+    <div class="lg-card">
+      <div class="lg-acc" style="background:linear-gradient(90deg,var(--rouge),var(--orange))"></div>
+      <div class="lg-n">01</div>
+      <div class="lg-title">L'Enfance sur les Pistes</div>
+      <div class="lg-sub" style="color:var(--rouge)">La langue commune</div>
+      <p>Pas la même école, pas le même quartier, mais la même attirance pour les machines et la vitesse. La moto comme seule liturgie commune.</p>
+    </div>
+    <div class="lg-card">
+      <div class="lg-acc" style="background:linear-gradient(90deg,var(--orange),var(--jaune))"></div>
+      <div class="lg-n">02</div>
+      <div class="lg-title">Trames entre eux</div>
+      <div class="lg-sub" style="color:var(--orange)">Liens & dettes</div>
+      <p>Nearyz & Tanjawi — cousins éloignés depuis le berceau. Yurisqua & Thenec — même immeuble, même palier. Nearyz & Yurisqua — tentative d'asso bikelife deux ans plus tôt. Des dettes de service entre chacun.</p>
+    </div>
+    <div class="lg-card">
+      <div class="lg-acc" style="background:linear-gradient(90deg,var(--jaune),var(--orange))"></div>
+      <div class="lg-n">03</div>
+      <div class="lg-title">Pourquoi zéro moto</div>
+      <div class="lg-sub" style="color:var(--jaune)">Le vide mécanique</div>
+      <p>Un rassemblement saisi par la BAC. Une moto vendue pour rembourser une dette. Un spot off-road détruit par un promoteur. Un quad hors normes planqué dans un box. Le groupe de bikelife qui n'a plus de machines.</p>
+    </div>
+    <div class="lg-card">
+      <div class="lg-acc" style="background:linear-gradient(90deg,var(--rouge2),var(--rouge))"></div>
+      <div class="lg-n">04</div>
+      <div class="lg-title">Le Réseau en Ville</div>
+      <div class="lg-sub" style="color:var(--rouge)">Contacts & connexions</div>
+      <p>Le frère aîné de Nearyz dans les milieux tuning. L'oncle de Tanjawi et son garage en zone indus. La crew de writers de Thenec qui contrôle les murs d'un secteur. Un conseiller municipal qui ne sait pas à qui il a donné une subvention.</p>
+    </div>
+    <div class="lg-card">
+      <div class="lg-acc" style="background:linear-gradient(90deg,var(--orange),var(--rouge))"></div>
+      <div class="lg-n">05</div>
+      <div class="lg-title">L'Association DirtKrew</div>
+      <div class="lg-sub" style="color:var(--orange)">La façade</div>
+      <p>Créée par Tanjawi. Nearyz trésorier, Yurisqua directeur artistique, Thenec communication visuelle. Siège : le garage de l'oncle. Sur le papier, une asso bikelife. Dans les faits, bien plus complexe.</p>
+    </div>
+    <div class="lg-card">
+      <div class="lg-acc" style="background:linear-gradient(90deg,var(--jaune),var(--rouge))"></div>
+      <div class="lg-n">06</div>
+      <div class="lg-title">Le Profil Commun</div>
+      <div class="lg-sub" style="color:var(--jaune)">Le trait partagé</div>
+      <p>Attirance marquée pour les excès — la fête qui dure, les substances qui désinhibent, la luxure comme récompense. Pas de l'autodestructeur conscient : c'est la façon dont ils décompressent. Un terreau fertile pour les mauvaises décisions.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="hr"></div>
+
+<!-- BASCULE -->
+<section id="bascule">
+<div class="sw n">
+  <div class="stag rv">Fichier Déclencheurs</div>
+  <h2 class="st rv d1">Le <em>Basculement</em></h2>
+  <p class="rv d2">Quatre fils qui se tendent en même temps. Chacun gère sa situation dans son coin, sans en parler aux autres.</p>
+
+  <div class="tl rv">
+    <div class="tl-item">
+      <div class="tl-time">Phase 0 — Fondation</div>
+      <div class="tl-title">L'ASSO DIRTKREW EST LANCÉE</div>
+      <p class="tl-text">Tanjawi formalise l'idée : une structure autour de la bikelife. La mairie les soutient, des sponsors locaux signent. Sur le papier, tout est propre. Sous la table, Tanjawi commence déjà à faire passer de petites sommes dans les comptes de l'asso.</p>
+    </div>
+    <div class="tl-item big">
+      <div class="tl-time y">Phase 1 — Déclencheur collectif</div>
+      <div class="tl-title">LA SEMAINE OÙ TOUT SE NOUE</div>
+      <p class="tl-text">En sept jours : Nearyz accepte sa première livraison de pièces volées. Thenec filme accidentellement un deal dans un entrepôt et se retrouve avec une vidéo explosive. Yurisqua signe avec le prestataire de bots sans mesurer les conséquences. Et un comptable de la ville envoie un mail discret à la mairie concernant les finances de DirtKrew.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Phase 2 — Engrenage</div>
+      <div class="tl-title">LES SECRETS COMMENCENT À PESER</div>
+      <p class="tl-text">Chacun gère dans son coin. Nearyz minimise ses livraisons. Tanjawi tente de neutraliser le comptable. Yurisqua dépense l'argent du sponsoring. Thenec ne sait pas quoi faire de la vidéo. Les tensions montent dans le groupe sans que personne ne nomme ce qui se passe vraiment.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">Phase 3 — Point de non-retour</div>
+      <div class="tl-title">LE GROUPE DOIT CHOISIR</div>
+      <p class="tl-text">Un contact commun — lié à la fois au receleur de Nearyz et au prestataire de Yurisqua — contacte le groupe en tant qu'entité. Il veut utiliser DirtKrew comme couverture logistique. La rémunération permettrait de tout résoudre. Le groupe vote — et c'est là que les vrais caractères se révèlent.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="hr"></div>
+
+<!-- FACADE -->
+<section id="facade">
+<div class="sw">
+  <div class="stag rv">Fichier Couverture</div>
+  <h2 class="st rv d1">Association <em>DirtKrew</em></h2>
+  <p class="rv d2" style="max-width:580px">La façade légale construite autour de la passion bikelife. Officiellement reconnue, subventionnée, respectée. Utilisée à d'autres fins.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:2.5rem">
+
+    <div class="gc rv">
+      <div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--rouge);margin-bottom:1rem">L'Association</div>
+      <div style="font-family:var(--ff-d);font-size:1.2rem;letter-spacing:.06em;color:var(--text);margin-bottom:.8rem">Structure & Fonctionnement</div>
+      <p style="font-size:.84rem;margin:0">Association loi 1901 créée par Tanjawi. <strong style="color:var(--text)">Nearyz</strong> — trésorier. <strong style="color:var(--text)">Yurisqua</strong> — directeur artistique et visage des réseaux. <strong style="color:var(--text)">Thenec</strong> — communication visuelle et identité graphique. Siège : le garage de l'oncle de Nearyz. Budget annuel officiel : suffisant pour couvrir les événements, insuffisant pour vivre.</p>
+    </div>
+
+    <div class="gc rv d1">
+      <div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:1rem">Activités Déclarées</div>
+      <div style="font-family:var(--ff-d);font-size:1.2rem;letter-spacing:.06em;color:var(--text);margin-bottom:.8rem">Ce qui est visible</div>
+      <ul style="list-style:none;padding:0">
+        <li style="font-size:.83rem;color:var(--muted);padding:.5rem 0;border-top:1px solid rgba(255,255,255,.05);display:flex;gap:.7rem;align-items:flex-start"><span style="color:var(--rouge);font-size:.7rem;margin-top:.3em">▸</span>Rassemblements bikelife mensuels hors-ville</li>
+        <li style="font-size:.83rem;color:var(--muted);padding:.5rem 0;border-top:1px solid rgba(255,255,255,.05);display:flex;gap:.7rem;align-items:flex-start"><span style="color:var(--rouge);font-size:.7rem;margin-top:.3em">▸</span>Initiations moto/quad pour les jeunes</li>
+        <li style="font-size:.83rem;color:var(--muted);padding:.5rem 0;border-top:1px solid rgba(255,255,255,.05);display:flex;gap:.7rem;align-items:flex-start"><span style="color:var(--rouge);font-size:.7rem;margin-top:.3em">▸</span>Contenu YouTube / Instagram / TikTok</li>
+        <li style="font-size:.83rem;color:var(--muted);padding:.5rem 0;border-top:1px solid rgba(255,255,255,.05);display:flex;gap:.7rem;align-items:flex-start"><span style="color:var(--rouge);font-size:.7rem;margin-top:.3em">▸</span>Vente de merch (maillots, stickers, patches)</li>
+        <li style="font-size:.83rem;color:var(--muted);padding:.5rem 0;border-top:1px solid rgba(255,255,255,.05);display:flex;gap:.7rem;align-items:flex-start"><span style="color:var(--rouge);font-size:.7rem;margin-top:.3em">▸</span>Interventions dans les établissements scolaires</li>
+      </ul>
+    </div>
+
+    <div class="gc rv d2">
+      <div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--jaune);margin-bottom:1rem">Revenus Légaux</div>
+      <div style="font-family:var(--ff-d);font-size:1.2rem;letter-spacing:.06em;color:var(--text);margin-bottom:.8rem">Ce qui entre proprement</div>
+      <p style="font-size:.83rem;margin:0;color:var(--muted)">Cotisations membres, subvention mairie, sponsoring local (garage partenaire, marques streetwear), ventes de merch. Revenus réels mais insuffisants pour rembourser les dettes accumulées — d'où la tentation de faire passer autre chose dans les comptes.</p>
+    </div>
+
+    <div class="gc rv d3">
+      <div style="font-family:var(--ff-m);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--rouge);margin-bottom:1rem">Identité Visuelle</div>
+      <div style="font-family:var(--ff-d);font-size:1.2rem;letter-spacing:.06em;color:var(--text);margin-bottom:.8rem">Le logo, le blaze, le style</div>
+      <p style="font-size:.83rem;margin:0;color:var(--muted)">Designée entièrement par Thenec. Logo entre tag urbain et stencil industriel — noir, rouge, orange. Le blaze "THENEC" est intégré subtilement dans le design. L'asso a une réputation visuelle dans la scène locale <em style="color:var(--text)">avant même d'être officiellement active</em>. Ça sert.</p>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<div class="hr"></div>
+
+<!-- CONNEXIONS -->
+<section id="connexions">
+<div class="sw">
+  <div class="stag rv">Fichier Réseau</div>
+  <h2 class="st rv d1">Contacts <em>en Ville</em></h2>
+  <p class="rv d2" style="max-width:540px">Six connexions clés qui forment le tissu relationnel du groupe. Certaines sont des ressources. Toutes sont des variables.</p>
+
+  <div class="city-grid">
+    <div class="ccard rv">
+      <div class="ccard-lbl">PNJ · Receleur</div>
+      <div class="ccard-name">Marcus Reeves</div>
+      <p>Receleur local qui tient la dette du père de Nearyz. Premier contact avec l'illégal pour le groupe. Connaît des gens qui connaissent des gens. La personne par qui tout a commencé.</p>
+      <span class="ccard-role">→ Pression / Dettes / Livraisons</span>
+    </div>
+    <div class="ccard rv d1">
+      <div class="ccard-lbl">PNJ · Comptable</div>
+      <div class="ccard-name">Kevin Strahl</div>
+      <p>Comptable de la ville. A détecté des irrégularités dans les comptes de DirtKrew. Contacte discrètement la mairie. Veut être acheté — ou éliminé. Menace latente et silencieuse pour Tanjawi.</p>
+      <span class="ccard-role">→ Menace institutionnelle</span>
+    </div>
+    <div class="ccard rv d2">
+      <div class="ccard-lbl">PNJ · Oncle</div>
+      <div class="ccard-name">Dmitri Maslow</div>
+      <p>Oncle de Yurisqua. Figure d'autorité qui a réussi dans les affaires. Yuri veut à tout prix l'impressionner — ce qui le rend vulnérable à toutes les pressions d'image et d'argent.</p>
+      <span class="ccard-role">→ Pression d'image / Orgueil</span>
+    </div>
+    <div class="ccard rv d3">
+      <div class="ccard-lbl">PNJ · Dealer incarcéré</div>
+      <div class="ccard-name">Danny Crawford</div>
+      <p>Grand frère de Thenec. En taule. Possède le Yamaha Grizzly 700 que Thenec utilise. Ressource depuis l'intérieur, mais aussi poids moral et juridique constant.</p>
+      <span class="ccard-role">→ Matériel / Contacts prison</span>
+    </div>
+    <div class="ccard rv">
+      <div class="ccard-lbl">Contact · Mécanique</div>
+      <div class="ccard-name">Garage de l'Oncle</div>
+      <p>Zone industrielle. Officiellement dépanneur. En pratique, transit de marchandises non déclarées. Siège officieux de DirtKrew. C'est lui qui a ouvert la première porte vers l'illégal pour Tanjawi.</p>
+      <span class="ccard-role">→ Logistique / Stockage</span>
+    </div>
+    <div class="ccard rv d1">
+      <div class="ccard-lbl">Couverture · Institution</div>
+      <div class="ccard-name">Conseiller Municipal</div>
+      <p>A subventionné l'asso pour ses "valeurs éducatives autour de la bikelife". Ne sait pas exactement ce que fait le groupe dans ses heures non déclarées. Mieux que ça reste ainsi.</p>
+      <span class="ccard-role">→ Couverture institutionnelle</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="hr"></div>
+
+<!-- OBJECTIFS -->
+<section id="objectifs">
+<div class="sw">
+  <div class="stag rv">Vision</div>
+  <h2 class="st rv d1">Ce que le groupe <em>Construit</em></h2>
+  <p class="rv d2">Trois horizons. Du départ légal à l'engrenage progressif.</p>
+
+  <div class="obj-grid">
+    <div class="oc t1 rv">
+      <div class="oc-num">01</div>
+      <div class="oc-pill">Court terme</div>
+      <div class="oc-title">Remettre des machines en jeu</div>
+      <ul class="oc-list">
+        <li>Racheter ou récupérer du matériel bikelife pour relancer l'asso et sa crédibilité</li>
+        <li>Rembourser les dettes individuelles avant qu'elles ne deviennent collectives</li>
+        <li>Lancer des événements DirtKrew visibles pour assoir la façade légale</li>
+        <li>Consolider la confiance interne — zéro fissure avant la première vraie pression</li>
+      </ul>
+    </div>
+    <div class="oc t2 rv d1">
+      <div class="oc-num">02</div>
+      <div class="oc-pill">Moyen terme</div>
+      <div class="oc-title">Utiliser la façade comme levier</div>
+      <ul class="oc-list">
+        <li>Faire grandir DirtKrew en marque locale crédible : merch, événements, présence digitale</li>
+        <li>Utiliser la musique et le contenu de Yurisqua comme vecteur de notoriété</li>
+        <li>Transformer les connexions en ressources — chaque contact est un atout</li>
+        <li>Gérer la menace du comptable sans exposer le groupe à des risques légaux directs</li>
+      </ul>
+    </div>
+    <div class="oc t3 rv d2">
+      <div class="oc-num">03</div>
+      <div class="oc-pill">Long terme</div>
+      <div class="oc-title">Exister à deux niveaux simultanément</div>
+      <ul class="oc-list">
+        <li>Une façade bikelife reconnue qui leur ouvre des portes légales et institutionnelles</li>
+        <li>Un réseau souterrain discret qui génère des revenus stables sans exposition directe</li>
+        <li>Assurer la sécurité de chaque membre — aucun ne tombe seul</li>
+        <li>Inscrire le nom DirtKrew dans la mémoire de la ville, dans les deux registres</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="hr"></div>
+
+<!-- ACTIVITES -->
+<section id="activites">
+<div class="sw">
+  <div class="stag rv">Opérations</div>
+  <h2 class="st rv d1">Ce que fait <em>DirtKrew</em></h2>
+
+  <div class="act-grid rv">
+    <div>
+      <div class="act-head" style="color:#39FF14"><div class="act-dot" style="background:#39FF14"></div>Activités Légales</div>
+      <div class="ai"><h4>Rassemblements Bikelife</h4><p>Événements mensuels sur terrain privé hors-ville. BBQ, musique, riders locaux invités. Image publique, couverture solide, recrutement discret de profils intéressants.</p></div>
+      <div class="ai"><h4>Contenu & Réseaux Sociaux</h4><p>Chaîne YouTube et Instagram de Yurisqua comme vitrine officielle. Clips de rides, behind-the-scenes, interviews fictives. 40k abonnés réels. Une crédibilité numérique qui sert à autre chose.</p></div>
+      <div class="ai"><h4>Merch DirtKrew</h4><p>Maillots, stickers, patches designés par Thenec. Vendus lors des événements et en ligne. Revenus modestes mais légitimes. Identité visuelle forte et reconnaissable dans la scène.</p></div>
+      <div class="ai"><h4>Garage Partenaire</h4><p>Un petit garage agréé sert de siège et de couverture mécanique. Réparations officielles, transit discret possible. Le patron se tait contre des arrangements.</p></div>
+    </div>
+    <div>
+      <div class="act-head" style="color:var(--rouge)"><div class="act-dot" style="background:var(--rouge)"></div>Activités en Zone Grise</div>
+      <div class="ai"><h4>Livraisons de Pièces Volées</h4><p>Via Nearyz et le réseau du receleur Marcus Reeves. Motos comme vecteur discret. Revenu d'appoint qui devient progressivement une dépendance économique.</p></div>
+      <div class="ai"><h4>Blanchiment via l'Asso</h4><p>Tanjawi fait passer de petites sommes dans les comptes de DirtKrew depuis le début. Invisible à petite échelle. Dangereux à mesure que les montants grossissent et que les contrôles se rapprochent.</p></div>
+      <div class="ai"><h4>Réseau de Bots / Faux Sponsoring</h4><p>Yurisqua, prestataire louche, stats gonflées. Ce qui semblait être du marketing devient un rouage involontaire d'une structure de blanchiment plus large.</p></div>
+      <div class="ai"><h4>La Vidéo de Thenec</h4><p>Fichier explosif sur un téléphone. Un deal filmé sans le vouloir. Une monnaie d'échange qui peut tout résoudre ou tout détruire selon comment elle est jouée — et par qui.</p></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="hr"></div>
+
+<!-- IDENTITE -->
+<section id="identite">
+<div class="sw">
+  <div class="stag rv">Culture</div>
+  <h2 class="st rv d1">Style <em>& Identité</em></h2>
+  <p class="rv d2">DirtKrew n'est pas un uniforme. C'est une signature. Bikelife, hip-hop, graff, streetwear — quatre cultures qui se superposent sur les mêmes individus.</p>
+
+  <div class="id-grid rv">
+    <div class="id-cell">
+      <div class="id-g">MX</div>
+      <h4>Bikelife</h4>
+      <p>Motocross, quad, stunt. Wheelies filmés, rasso hors-ville, riders connus dans la scène locale. La passion qui justifie tout le reste.</p>
+    </div>
+    <div class="id-cell">
+      <div class="id-g">HH</div>
+      <h4>Hip-Hop</h4>
+      <p>Trap, drill, rap US & français. Yurisqua pose des freestyles. Tanjawi a une playlist par humeur. La bande-son permanente du groupe.</p>
+    </div>
+    <div class="id-cell">
+      <div class="id-g">GR</div>
+      <h4>Graffiti</h4>
+      <p>Thenec en tête de proue. Murs taggués, halls de gare, tunnels. Le blaze THENEC est une marque à part entière dans la ville.</p>
+    </div>
+    <div class="id-cell">
+      <div class="id-g">SW</div>
+      <h4>Streetwear</h4>
+      <p>Carhartt, Fear of God, Stone Island, Supreme. Oversized, cargos, sneakers limited. Le style comme armure sociale et carte de visite.</p>
+    </div>
+    <div class="id-cell">
+      <div class="id-g">EX</div>
+      <h4>Excès</h4>
+      <p>Alcool, substances, nuits longues, luxure. Pas de morale de groupe sur le sujet — juste une règle non dite : rester fonctionnel quand ça compte.</p>
+    </div>
+    <div class="id-cell">
+      <div class="id-g">DG</div>
+      <h4>Présence Digitale</h4>
+      <p>Stories, reels, clips maison. L'asso a un compte suivi dans la scène bikelife locale. La notoriété comme couverture et comme outil.</p>
+    </div>
+  </div>
+
+  <div class="pq rv" style="margin-top:4rem">"On se dispute comme des frères. On se protège comme des frères. On se tait comme des frères."</div>
+</div>
+</section>
+
+<div class="hr"></div>
+
+<!-- CONCLUSION -->
+<section id="conclusion">
+<div class="conc-wrap">
+  <div class="conc-ring rv"><div class="conc-ring-t">DK<br>BL</div></div>
+  <div class="stag rv" style="justify-content:center;display:block;text-align:center">Pour finir</div>
+  <h2 class="st rv d1" style="text-align:center">Un Dossier,<br>une <em>Intention</em></h2>
+  <p class="rv d2" style="text-align:center;max-width:580px;margin-left:auto;margin-right:auto">Bloc Libre / DirtKrew n'arrive pas comme un concept abstrait. Le groupe arrive avec une histoire construite, des liens réels, des tensions déjà existantes entre membres — et des éléments déclencheurs individuels qui, mis bout à bout, créent une mécanique narrative prête à jouer.</p>
+  <p class="rv d2" style="text-align:center;max-width:580px;margin-left:auto;margin-right:auto">Le départ est légal. La façade est solide. Mais chaque personnage porte déjà en lui la graine de ce qui va tout faire basculer — et aucun d'entre eux ne le sait encore tout à fait.</p>
+  <div class="pq rv" style="text-align:left">"On n'est pas là pour faire du bruit. On est là pour s'installer. Et pour ça, on est prêts à tout."</div>
+  <p class="rv d3" style="text-align:center;font-family:var(--ff-m);font-size:.72rem;letter-spacing:.35em;text-transform:uppercase;background:linear-gradient(135deg,var(--orange2),var(--rouge));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:2rem">Bikelife · Rue · DirtKrew · Bloc Libre</p>
+</div>
+</section>
+
+<footer>
+  <div class="fl">Bloc Libre · DirtKrew · Petites Frappes · Intro WL</div>
+  <div class="fr">Dossier RP · Columbus, Ohio · 2026</div>
+</footer>
 
 <script>
-const DATA = {
-  "Monde & Setting": {
-    icon: "ti-map-pin",
-    items: [
-      { t: "Choisir la ville précise (Columbus OH ou fictive inspirée)", tag: "key" },
-      { t: "Délimiter les quartiers clés : là où le groupe vit, roule, traine", tag: "key" },
-      { t: "Cartographier les spots bikelife (terrains vagues, parkings, tunnels)", tag: "lore" },
-      { t: "Définir l'époque : contemporaine, passé proche, futur proche ?", tag: "key" },
-      { t: "Niveau de présence policière / ambiance sociale du quartier", tag: "hot" },
-      { t: "Existe-t-il d'autres crews bikelife dans la ville ? Rivaux, alliés ?", tag: "lore" },
-      { t: "Quels lieux servent de QG informels (garage, appartement, squat)", tag: "lore" },
-      { t: "La ville a-t-elle une scène graffiti active ? Hip-hop ?", tag: "opt" },
-    ]
-  },
-  "Système de jeu": {
-    icon: "ti-dice",
-    items: [
-      { t: "Quel système de jeu ? (GTA-like, PbtA, FitD, Savage Worlds, homebrew...)", tag: "key" },
-      { t: "Définir les stats/attributs des persos (physique, social, technique, etc.)", tag: "key" },
-      { t: "Mécanique de réputation : comment évolue le statut dans la rue ?", tag: "hot" },
-      { t: "Mécanique de stress / santé mentale pour les excès des persos", tag: "hot" },
-      { t: "Comment gérer les actions illégales : risque, exposition, conséquences", tag: "hot" },
-      { t: "Système de compétences liées à la moto (tricks, mécanique, fuite)", tag: "key" },
-      { t: "Comment les dettes / faveurs fonctionnent mécaniquement", tag: "key" },
-      { t: "Est-ce que la mort des persos est possible ? À quelles conditions ?", tag: "opt" },
-      { t: "Sessions longues ou courtes ? Format one-shot ou campagne ?", tag: "key" },
-    ]
-  },
-  "L'asso DirtKrew": {
-    icon: "ti-building",
-    items: [
-      { t: "Statut légal précis de l'asso (loi, type, depuis quand)", tag: "key" },
-      { t: "Revenus légaux déclarés : événements, merch, partenariats", tag: "key" },
-      { t: "Qui sait quoi sur les flux d'argent réels ?", tag: "hot" },
-      { t: "Quelles personnes extérieures gravitent autour de l'asso (bénévoles, clients)", tag: "lore" },
-      { t: "L'asso a-t-elle des réseaux sociaux actifs ? Qui les gère ?", tag: "opt" },
-      { t: "Existe-t-il un local physique ou tout est nomade ?", tag: "lore" },
-      { t: "Quels événements passés ont eu lieu ? Incidents mémorables ?", tag: "lore" },
-      { t: "Les autres membres savent-ils pour le blanchiment de Tanjawi ?", tag: "hot" },
-    ]
-  },
-  "PNJ essentiels": {
-    icon: "ti-users",
-    items: [
-      { t: "Marcus Reeves (receleur / créancier de Nearyz) : motivations profondes", tag: "hot" },
-      { t: "Kevin Strahl (comptable) : veut de l'argent ou autre chose ?", tag: "hot" },
-      { t: "Dmitri Maslow (oncle de Yurisqua) : ressource ou menace ?", tag: "key" },
-      { t: "Danny Crawford (frère de Thenec, en prison) : quand sort-il ? Quel rôle ?", tag: "hot" },
-      { t: "Créer 1-2 PNJ féminins avec une vraie agentivité narrative", tag: "key" },
-      { t: "Créer un représentant des forces de l'ordre (flic sympa ou corrompu ?)", tag: "key" },
-      { t: "Créer un crew rival avec un nom, un territoire, une tension précise", tag: "lore" },
-      { t: "Y a-t-il un boss criminel au-dessus des PNJ déjà définis ?", tag: "hot" },
-      { t: "Familles des joueurs : présentes, absentes, impliquées ?", tag: "lore" },
-    ]
-  },
-  "Arcs narratifs": {
-    icon: "ti-flame",
-    items: [
-      { t: "Définir un arc court terme (session 1-3) et un arc long terme", tag: "key" },
-      { t: "Quelle est la bombe à retardement centrale du lore ?", tag: "hot" },
-      { t: "La vidéo de Thenec : qui veut la récupérer, qui veut la détruire", tag: "hot" },
-      { t: "Comment les 4 arcs déclencheurs se croisent concrètement", tag: "hot" },
-      { t: "Prévoir 2-3 moments de trahison possible entre les joueurs", tag: "key" },
-      { t: "Qu'est-ce qui pourrait réunir le groupe contre un ennemi commun ?", tag: "lore" },
-      { t: "Scénario d'escalade : le premier mort, la première arrestation", tag: "hot" },
-      { t: "Quelle fin possible pour chaque personnage (rédemption, chute, fuite) ?", tag: "opt" },
-    ]
-  },
-  "Bikelife & Motos": {
-    icon: "ti-motorbike",
-    items: [
-      { t: "Définir les motos manquantes : pourquoi elles ont disparu (vol, saisie, dette)", tag: "key" },
-      { t: "Comment le groupe compte récupérer des machines ?", tag: "key" },
-      { t: "Grilles de compétences moto : qui sait faire quoi (tricks, mécanique, fuite)", tag: "lore" },
-      { t: "Les spots de ride : légaux (terrains privés) vs illégaux (rue, autoroute)", tag: "lore" },
-      { t: "Est-ce que la bikelife génère des revenus (vidéos, paris, paris illégaux) ?", tag: "opt" },
-      { t: "Quels accidents passés ont marqué le groupe ? Trauma partagé ?", tag: "lore" },
-      { t: "La moto comme symbole : qu'est-ce qu'en posséder une représente pour chaque perso ?", tag: "key" },
-    ]
-  },
-  "Ambiance & Esthétique": {
-    icon: "ti-palette",
-    items: [
-      { t: "Playlist de références musicales pour l'ambiance de jeu", tag: "opt" },
-      { t: "Références visuelles : films, séries, photos pour aligner la vision du groupe", tag: "opt" },
-      { t: "Vocabulaire commun : argot du groupe, expressions récurrentes", tag: "lore" },
-      { t: "Comment les persos parlent différemment (registres, tics de langage)", tag: "lore" },
-      { t: "Code vestimentaire lors des sessions importantes (rasso, deal, deal qui tourne mal)", tag: "opt" },
-      { t: "La scène graffiti de Thenec : noms, spots, réputation dans la ville", tag: "lore" },
-      { t: "Ambiance visuelle des différents lieux (garage sombre vs appartement hype vs entrepôt)", tag: "opt" },
-    ]
-  },
-  "Méta & Logistique": {
-    icon: "ti-settings",
-    items: [
-      { t: "Règles de table (lignes rouges, contenu sensible, safety tools)", tag: "hot" },
-      { t: "Fréquence et durée des sessions", tag: "key" },
-      { t: "Qui est MJ / comment la narration est distribuée", tag: "key" },
-      { t: "Outils utilisés : dés physiques, appli, roll20, discord, etc.", tag: "key" },
-      { t: "Comment gérer les absences de joueurs en cours de campagne", tag: "key" },
-      { t: "Document partagé ou tout est en tête ? Besoin d'un wiki de campagne ?", tag: "opt" },
-      { t: "Session zéro prévue pour aligner tout le monde sur le lore ?", tag: "hot" },
-      { t: "Les joueurs peuvent-ils introduire des éléments de lore eux-mêmes ?", tag: "opt" },
-    ]
-  }
-};
+/* CURSOR */
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=window.innerWidth/2,my=window.innerHeight/2,rx=mx,ry=my;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function af(){rx+=(mx-rx)*.13;ry+=(my-ry)*.13;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(af)})();
+document.addEventListener('mouseover',e=>{
+  if(e.target.closest('a,button,.cc,.oc,.ai,.id-cell,.gc,.ccard'))ring.classList.add('big');
+  else ring.classList.remove('big');
+},{passive:true});
 
-let checked = JSON.parse(localStorage.getItem('dk_checks') || '{}');
-let currentCat = Object.keys(DATA)[0];
+/* LOADER */
+(function(){
+  document.body.style.overflow='hidden';
+  let pct=0;
+  const pEl=document.getElementById('loader-pct');
+  const iv=setInterval(()=>{
+    pct=Math.min(100,pct+Math.floor(Math.random()*4)+1);
+    if(pEl)pEl.textContent=pct+'%';
+    if(pct>=100)clearInterval(iv);
+  },36);
+  setTimeout(()=>{
+    const l=document.getElementById('loader');
+    l.classList.add('hidden');
+    setTimeout(()=>{document.body.style.overflow='';l.remove()},1000);
+  },3800);
+})();
 
-function save() {
-  try { localStorage.setItem('dk_checks', JSON.stringify(checked)); } catch(e) {}
-}
+/* REVEAL */
+const robs=new IntersectionObserver(e=>{
+  e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('v');robs.unobserve(x.target)}});
+},{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>robs.observe(el));
 
-function totalStats() {
-  let total = 0, done = 0;
-  Object.keys(DATA).forEach(cat => {
-    DATA[cat].items.forEach((item, i) => {
-      total++;
-      if (checked[cat + '_' + i]) done++;
-    });
+/* NAV */
+const nb=document.getElementById('navbar');
+const sobs=new IntersectionObserver(e=>{
+  e.forEach(x=>{
+    if(x.isIntersecting){
+      document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+      const a=document.querySelector(`.nav-links a[href="#${x.target.id}"]`);
+      if(a)a.classList.add('active');
+    }
   });
-  return { total, done };
-}
-
-function renderTabs() {
-  const el = document.getElementById('cats');
-  el.innerHTML = Object.keys(DATA).map(cat => 
-    `<button class="ct ${cat===currentCat?'on':''}" onclick="switchCat('${cat}')">${cat}</button>`
-  ).join('');
-}
-
-function renderProgress() {
-  const { total, done } = totalStats();
-  const pct = total ? Math.round(done/total*100) : 0;
-  document.getElementById('prog-text').textContent = `${done} / ${total} éléments complétés`;
-  document.getElementById('prog-pct').textContent = `${pct}%`;
-  document.getElementById('prog-fill').style.width = pct + '%';
-}
-
-function renderContent() {
-  const cat = DATA[currentCat];
-  const items = cat.items;
-  const catDone = items.filter((_, i) => checked[currentCat+'_'+i]).length;
-
-  let html = `<div class="section-block">
-    <div class="sec-header">
-      <i class="ti ${cat.icon} sec-icon" aria-hidden="true"></i>
-      <span class="sec-title">${currentCat}</span>
-      <span class="sec-count">${catDone}/${items.length}</span>
-    </div>`;
-  
-  items.forEach((item, i) => {
-    const key = currentCat + '_' + i;
-    const done = !!checked[key];
-    const tagMap = { hot: ['tag-hot','priorité'], key: ['tag-key','essentiel'], opt: ['tag-opt','optionnel'], lore: ['tag-lore','lore'] };
-    const [tagCls, tagLbl] = tagMap[item.tag] || ['tag-opt',''];
-    html += `<div class="item" onclick="toggle('${key}')">
-      <div class="checkbox ${done?'checked':''}"><span class="check-mark">&#10003;</span></div>
-      <span class="item-text ${done?'checked-text':''}">${item.t}</span>
-      <span class="tag ${tagCls}">${tagLbl}</span>
-    </div>`;
-  });
-  html += '</div>';
-  document.getElementById('content').innerHTML = html;
-}
-
-function toggle(key) {
-  checked[key] = !checked[key];
-  save();
-  renderContent();
-  renderProgress();
-}
-
-function switchCat(cat) {
-  currentCat = cat;
-  renderTabs();
-  renderContent();
-}
-
-function resetAll() {
-  if (confirm('Réinitialiser toutes les cases ?')) {
-    checked = {};
-    save();
-    renderContent();
-    renderProgress();
-  }
-}
-
-renderTabs();
-renderContent();
-renderProgress();
+},{threshold:.35});
+document.querySelectorAll('section[id],div[id]').forEach(s=>sobs.observe(s));
+window.addEventListener('scroll',()=>nb.classList.toggle('scrolled',window.scrollY>80));
 </script>
+</body>
+</html>
